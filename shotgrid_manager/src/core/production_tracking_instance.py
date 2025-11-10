@@ -22,7 +22,7 @@ def get_flow_instance() -> sg.shotgun.Shotgun:
 
 
 if __name__ == "__main__":
-    flow_instance = get_shotgun_instance()
+    flow_instance = get_flow_instance()
     sbox_data = {"type": "Project", "id": int(os.getenv("KKR_SBOX_ID"))}
 
     filters = [
