@@ -23,13 +23,14 @@ def get_flow_instance() -> sg.shotgun.Shotgun:
 
 if __name__ == "__main__":
     flow_instance = get_flow_instance()
-    sbox_data = {"type": "Project", "id": int(os.getenv("KKR_SBOX_ID"))}
+    
+    # get fields from entities
+    # schema = flow_instance.schema_field_read("TaskTemplate")
+    # for attr, value in schema.items():
+    #     print(attr, value)
 
-    filters = [
-        ['id', 'is', sbox_data.get("id")]
-        ]
-    data_found = flow_instance.find(entity_type=sbox_data.get("type", "Project"), filters=filters, fields=["id", "code", "name"])
-    print(data_found)
-    for found_dict in data_found:
-        print(found_dict.get('name'), found_dict.get('id'))
+    # find templates
+    templates = flow_instance.find("TaskTemplate", filters=[], fields=['type', 'id', 'name', 'code', 'tasks', 'task_count'])
 
+    for template in templates:
+        print(template)
