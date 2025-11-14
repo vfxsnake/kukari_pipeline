@@ -8,7 +8,7 @@ import shotgun_api3 as sg
 import logging
 from utils.logger import setup_logging
 
-class ShotgunInstance(): 
+class ShotgridInstance(): 
     logger = logging.getLogger(__name__)
 
     def __init__(self):
@@ -54,6 +54,6 @@ class ShotgunInstance():
 
 if __name__ == "__main__":
 
-    flow = ShotgunInstance()
+    flow = ShotgridInstance()
     flow.open_connection()
 

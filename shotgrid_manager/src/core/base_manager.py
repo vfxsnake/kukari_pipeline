@@ -1,12 +1,12 @@
 import logging
 
-from .shotgun_instance import ShotgunInstance
+from .shotgrid_instance import ShotgridInstance
 from utils.logger import setup_logging
 
 class BaseManager():
     logger = logging.getLogger(__name__)
     
-    def __init__(self, shotgun_instance:ShotgunInstance):
+    def __init__(self, shotgun_instance:ShotgridInstance):
         self.manager = shotgun_instance
         setup_logging()
 
