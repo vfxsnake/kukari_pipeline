@@ -12,7 +12,7 @@ def setup_logging():
         logging.basicConfig(
             level=logging.DEBUG,
             stream=sys.stdout,
-            format='%(asctime)s | %(name)-15s | %(levelname)-8s | %(message)s',
+            format='%(asctime)s | %(name)-1s | %(levelname)-1s | %(module)s:%(lineno)d | %(message)s', 
             datefmt='%H:%M:%S'
         )
         
