@@ -18,7 +18,7 @@ class TaskManager(BaseManager):
 
     def update_task(self, task_id, new_data):
         self.connect()
-        updated_task = self.manager.instance.update(entity_type="Task", entity_id=task_id, data=new_data)
+        updated_task = self.manager.instance.update(entity_type=self.entity, entity_id=task_id, data=new_data)
         self.close()
         return updated_task
 
