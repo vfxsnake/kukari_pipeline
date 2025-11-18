@@ -54,21 +54,43 @@ class ShotgridInstance():
 
 
 if __name__ == "__main__":
+    import requests
+    import shutil
+
     setup_logging()
     logger = logging.getLogger(__name__)
     
     flow = ShotgridInstance()
     flow.open_connection()
-
-    entities = flow.instance.find(entity_type="Task", filters=[["task_assignees", "is", {"type": "HumanUser", "id":19}]], fields=["id", "code", "content", "project", "due_date", "sg_priority_1"])
+    # schemas = flow.instance.schema_field_read(entity_type="Attachment")
+    # entities = flow.instance.find(entity_type="Attachment", filters=[["project", "is", {"type": "Project", "id":124}]], fields=["id", "code", "content", "project", "due_date", "sg_priority_1"])
     # for element in entities:
     #     task_assignees = element.get("task_assignees", [])
     #     task_assignees.append({'type': 'HumanUser', 'id': 19, 'name': 'Artist 1'})
     #     data = {"task_assignees": task_assignees}
     #     flow.instance.update(entity_type=element.get('type', "Task"), entity_id=element.get('id', 19), data=data)
+    # fields = [
+    # 'code','description','name','filmstrip_image','path_cache','path_cache_storage','version','task','path','version_number','cached_display_name','updated_by','created_by',
+    # 'published_file_type', 'sg_status_list', 'updated_at', 'created_at', 'project', 'id', 'tags', 'upstream_published_files', 'downstream_published_files', 'image',
+    # 'image_source_entity', 'entity', 'image_blur_hash'
+    # ]
 
-    # entities = flow.instance.find(entity_type="Task", filters=[["project", "is", {"type": "Project", "id":124}]], fields=["id", "code", "content", "project", "task_assignees"])
+    fields = ['cached_display_name', 'original_fname', 'id',
+    'attachment_links', 'this_file', 'updated_at',
+    'file_extension', 'description', 'filename', 'display_name', 'created_at']
 
-    logger.info(f"Tasks : {entities}")
+    entities = flow.instance.find(entity_type="Attachment", filters=[["id", "is", 673]], fields=fields)
+
+    # url = flow.instance.download_attachment( 673, file_path="/mnt/c/Users/jazzj/Documents/Projects/shot_grid_test/CianLu_downloaded_v003.abc")
+
+    # response = requests.get(url, stream=True)
+    # response.raise_for_status() # Raise an exception for bad status codes
+
+    # # Save the file in chunks to avoid loading the entire file into memory
+    # local_file = "/mnt/c/Users/jazzj/Documents/Projects/shot_grid_test/CianLu_downloaded_v002.abc"
+    # with open(local_file, 'wb') as f:
+    #     shutil.copyfileobj(response.raw, f)
+
+    logger.info(f"Attachment : {entities}")
     flow.close_connection()
 

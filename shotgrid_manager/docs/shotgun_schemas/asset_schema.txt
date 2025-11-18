@@ -91,3 +91,7 @@ step_131 {'name': {'value': 'Visualization', 'editable': True}, 'description': {
 step_132 {'name': {'value': 'Class-A', 'editable': True}, 'description': {'value': '', 'editable': True}, 'custom_metadata': {'value': '', 'editable': True}, 'entity_type': {'value': 'Asset', 'editable': False}, 'data_type': {'value': 'pivot_column', 'editable': False}, 'editable': {'value': False, 'editable': False}, 'mandatory': {'value': False, 'editable': False}, 'unique': {'value': False, 'editable': False}, 'properties': {'default_value': {'value': None, 'editable': False}, 'summary_default': {'value': 'none', 'editable': False}}, 'visible': {'value': True, 'editable': False}, 'ui_value_displayable': {'value': True, 'editable': False}}
 
 step_16 {'name': {'value': 'Texture', 'editable': True}, 'description': {'value': '', 'editable': True}, 'custom_metadata': {'value': '', 'editable': True}, 'entity_type': {'value': 'Asset', 'editable': False}, 'data_type': {'value': 'pivot_column', 'editable': False}, 'editable': {'value': False, 'editable': False}, 'mandatory': {'value': False, 'editable': False}, 'unique': {'value': False, 'editable': False}, 'properties': {'default_value': {'value': None, 'editable': False}, 'summary_default': {'value': 'none', 'editable': False}}, 'visible': {'value': True, 'editable': False}, 'ui_value_displayable': {'value': True, 'editable': False}}
+
+
+
+vaild_types sg_asset_type: ['Character', 'Environment', 'Prop', 'FX', 'Graphic', 'Matte Painting', 'Vehicle', 'Weapon', 'Model', 'Theme', 'Zone', 'Part']

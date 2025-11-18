@@ -43,7 +43,7 @@ class TaskViewerWidget(QWidget):
     - Controller: The methods within this class that handle user input
                   and update the view (`on_project_changed`, `_populate_tasks`).
     """
-    HEADER_LABELS = ["Entity", "Task", "Due Date", "Priority", "status"]
+    HEADER_LABELS = ["Entity", "Task", "Due Date", "Priority", "status", "id"]
 
     def __init__(self, shotgun_data_model, parent=None):
         """
@@ -156,10 +156,14 @@ class TaskViewerWidget(QWidget):
             priority = task_data.get("sg_priority_1", "N/A")
             self.task_table.setItem(row, 3, QTableWidgetItem(priority))
 
-            # Priority
+            # status
             status = task_data.get("sg_status_list", "N/A")
             self.task_table.setItem(row, 4, QTableWidgetItem(status))
-        
+
+            # id
+            id = task_data.get("id", -1)
+            self.task_table.setItem(row, 5, QTableWidgetItem(f"{id}"))
+
         self.task_table.setSortingEnabled(True)
 
     def on_project_changed(self, project_name: str):

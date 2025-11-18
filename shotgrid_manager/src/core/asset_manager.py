@@ -6,26 +6,26 @@ import logging
 class AssetManager(BaseManager):
     entity = "Asset"
 
-    def create_asset(self, project_id:int, name:str, task_template:dict=None)->dict:
+    def create_asset(self, project_id:int, name:str, task_template:dict)->dict:
         asset_data = {
             "project": {"type": "Project", "id": project_id},
             "code": name,
         }
         if task_template:
             asset_data.setdefault("task_template", task_template)
-        self.connect()
-        created_asset =  self.manager.instance.create(self.entity, data = asset_data)
-        self.close()
+
+        created_asset =  self.create_entity(data = asset_data)
+
         return created_asset
     
-    def create_character(self, project_id:int, name:str, template_id:int):
+    def create_character(self, project_id:int, name:str, template_id:int)->dict:
         task_template = {'type': 'TaskTemplate', 'id': template_id}
         return self.create_asset(project_id=project_id, name=name, task_template=task_template)
     
-    def create_environment(self):
+    def create_environment(self)->dict:
         pass
 
-    def create_prop(self):
+    def create_prop(self)->dict:
         pass
 
 
