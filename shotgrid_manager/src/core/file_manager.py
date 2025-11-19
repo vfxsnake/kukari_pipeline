@@ -63,19 +63,24 @@ class FileManager(BaseManager):
         )
         self.close()
 
-    def download_attachments(self, published_file_id, task_path):
+    def download_attachments(self, published_file_id, path_builder:PathBuilder):
         
         published_file = self.get_entity(
             filters=[["id", 'is', published_file_id]],
-            fields= ['id', 'project', 'version', 'task']
+            fields= ['id', 'project', 'version', "version_number",'task']
         )
+        if not published_file.get("task", {}):
+            self.logger.info("no valid task found to create path")
+            return
+        
+        task_path = path_builder.get_path_from_task(published_file.get("task"))
 
         if published_file:
             attachments = self.get_attachments(published_file_id=published_file.get('id', -1))
             for attachment in attachments:
                 self.download_attachment(
                     attachment.get('id', -1),
-                    target_path=f"{task_path}/{entity_name}__{task_name}__v{version_number:04d}.{extension}"
+                    target_path=f"{task_path}/{published_file.get('name')}__{published_file.get("version_number")}.{attachment.get("file_extension")}"
                 )
         self.close()    
 

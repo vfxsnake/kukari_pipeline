@@ -36,7 +36,7 @@ class PathBuilder():
             filters=[["id", "is", task_id]],
             fields= [
                 'code','sg_versions', 'created_at', 'project', 'id',
-                'entity', 'entity.sg_asset_type', 'entity.sg_shot_type' 
+                'entity','entity.sg_asset_type', 'entity.sg_shot_type' 
             ]
         )
         self.manager.close_connection()
@@ -67,3 +67,22 @@ class PathBuilder():
         else:
             raise FileExistsError("empty or invalid path provided. {file_path}")
     
+
+
+if __name__ == "__main__":
+    flow = ShotgridInstance()
+    flow.open_connection()
+    asset = flow.instance.find_one(
+        entity_type="Asset", 
+        filters=[["id", "is", 1445]],
+        fields=["sg_asset_type"]
+    )
+    # path_builder = PathBuilder(flow)
+
+    # task_path = path_builder.get_path_from_task(task_id=5860)
+    print(asset)
+
+    
+
+
+
