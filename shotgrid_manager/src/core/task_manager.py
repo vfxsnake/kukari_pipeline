@@ -6,15 +6,25 @@ import logging
 
 class TaskManager(BaseManager):
     entity = "Task"
+    entity_fields = ["id", "code", "content", "project", "due_date", "sg_priority_1", "entity", "sg_status_list"]
 
-    def get_tasks(self, user_id:int)->List[dict]:
+    def get_tasks_from_user(self, user_id:int)->List[dict]:
 
         task_list = self.get_entities( 
             filters=[["task_assignees", "is", {"type": "HumanUser", "id":user_id}]], 
-            fields=["id", "code", "content", "project", "due_date", "sg_priority_1", "entity", "sg_status_list"]
+            fields= self.entity_fields
         )
         return task_list
 
+    def get_tasks_from_shot(self, shot_id:int):
+        task_list = self.get_entities( 
+            filters=[["entity", "is", {"type": "Shot", "id":shot_id}]], 
+            fields= self.entity_fields
+        )
+        return task_list
+
+    def get_tasks_from_asset(self, asset_id:int):
+        pass
 
     def update_status(self, task_id, new_status)->dict:
         data = {'sg_status_list': new_status}
@@ -28,6 +38,6 @@ if __name__ == "__main__":
 
     flow = ShotgridInstance()
     task_manager = TaskManager(shotgun_instance=flow)
-    data = task_manager.get_tasks(19)
+    data = task_manager.get_tasks_from_shot(shot_id=1174)
     logger.info(f"data: {data}")
     task_manager.close()

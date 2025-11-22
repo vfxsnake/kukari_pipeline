@@ -69,19 +69,18 @@ if __name__ == "__main__":
     
     # getting entities
     entities = flow.instance.find(
-        entity_type="TaskTemplate", 
-        filters=[], 
-        fields= [
-            'code', #'description', 'entity_type', 'task_count', 'cached_display_name', 'updated_by', 'created_by', 
-        #     'created_at','updated_at', 'id', 'project', 'notes', 'open_notes', 'open_notes_count'
-            ]
+        entity_type="Asset", 
+        filters=[["project", "is", {'id': 124, 'name': 'SandBox', 'type': 'Project'}]], 
+        fields= ['code', 'sg_asset_type', "tasks"]
     )
     print(entities)
+
+    # update entities
+    # data = {'sg_asset_type': 'Character'}
+    # updated_entity = flow.instance.update(entity_type="Asset", entity_id=1445, data=data)
+    # print(updated_entity)
 
     flow.close_connection()
 
 
-[ 
-    {'type': 'TaskTemplate', 'id': 46, 'code': 'Kukari_Animation_Assets'}, 
-    {'type': 'TaskTemplate', 'id': 47, 'code': 'Kukari_Animation_Shots'}
-]
+

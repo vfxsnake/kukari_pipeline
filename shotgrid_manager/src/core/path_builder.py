@@ -35,30 +35,48 @@ class PathBuilder():
             entity_type="Task",
             filters=[["id", "is", task_id]],
             fields= [
-                'code','sg_versions', 'created_at', 'project', 'id',
-                'entity','entity.sg_asset_type', 'entity.sg_shot_type' 
+                'content','sg_versions', 'project', 'id',
+                'entity','entity.Asset.sg_asset_type', 'entity.Asset.code'
             ]
         )
         self.manager.close_connection()
-        if task:
-            self.logger.info(f"task: {task}")
-            task_name = task.get("code", "")
-            project = task.get("Project", {}).get("name", "")
-            entity_type = task.get("entity", {}).get("type", "")
-            entity_name = ""
-            if entity_type == "Asset":
-                asset_type = task.get("entity", {}).get("sg_asset_type", "")
-                asset_name = task.get("entity", {}).get("code", "")
-                if asset_type and asset_name:
-                    entity_name = f"{ASSETS_TYPE_MAP.get(asset_type)}/{asset_name}"
-            elif entity_type == "Shot":
-                entity_name = task.get("entity", {}).get("code", "")
-
-            if task_name and project and entity_type and entity_name:
-                out_path =f"{WORK_AREA_PATH}/{project}/{ENTITY_TYPE_MAP.get(entity_type)}/{entity_name}/{task_name}"
-                return out_path
+        
+        if not task:
+            self.logger.error("unable to find task!!")
             return ""
-    
+        
+        # self.logger.info(f"task: {task}")
+        task_name = task.get("content", "")
+        project = task.get("project", {}).get("name", "")
+        entity_type = task.get("entity", {}).get("type", "")
+        
+        entity_name = ""
+        if entity_type == "Asset":
+            asset_type = task.get("entity.Asset.sg_asset_type", "")
+            asset_name = task.get("entity.Asset.code", "")
+            if asset_type and asset_name:
+                entity_name = f"{ASSETS_TYPE_MAP.get(asset_type)}/{asset_name}"
+        
+        elif entity_type == "Shot":
+            entity_name = task.get("entity", {}).get("name", "")
+            
+        if task_name and project and entity_type and entity_name:
+            out_path =f"{WORK_AREA_PATH}/{project}/{ENTITY_TYPE_MAP.get(entity_type)}/{entity_name}/{task_name}"
+            return out_path
+        return ""
+        
+    def get_task_paths_from_asset(self, asset_id)->List[dict]:
+        self.manager.open_connection()
+        asset = self.manager.instance.find_one(entity_type="Asset", filters=[["id", "is", asset_id]], fields=["tasks"])
+        self.manager.close_connection()
+        if not asset:
+            return []
+        paths = []
+        for task in asset.get('tasks', []):
+            task_path = self.get_path_from_task(task.get("id"))
+            if task_path:
+                paths.append(task_path)
+        return paths
 
     def create_path(self, file_path):
         if file_path:
@@ -72,15 +90,14 @@ class PathBuilder():
 if __name__ == "__main__":
     flow = ShotgridInstance()
     flow.open_connection()
-    asset = flow.instance.find_one(
-        entity_type="Asset", 
-        filters=[["id", "is", 1445]],
-        fields=["sg_asset_type"]
-    )
-    # path_builder = PathBuilder(flow)
 
-    # task_path = path_builder.get_path_from_task(task_id=5860)
-    print(asset)
+    path_builder = PathBuilder(flow)
+
+    task_path = path_builder.get_path_from_task(task_id=5961)
+    print(task_path)
+    # for path in task_paths:
+    path_builder.create_path(task_path)
+    
 
     
 

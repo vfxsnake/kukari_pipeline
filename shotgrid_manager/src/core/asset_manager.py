@@ -6,6 +6,7 @@ import logging
 
 class AssetManager(BaseManager):
     entity = "Asset"
+    entity_fields = ["task_template", "sg_versions", "sg_published_files", "tasks", "sg_status_list", "shots", "assets"]
 
     def create_asset(self, project_id:int, name:str, task_template:dict=None, asset_type:str=None)->dict:
         """
@@ -67,7 +68,19 @@ class AssetManager(BaseManager):
         task_template = {'type': 'TaskTemplate', 'id': template_id}
         return self.create_asset(project_id=project_id, name=name, task_template=task_template, asset_type="Prop")
 
-
+    def get_assets_from_project(self, project_id:int):
+        assets = self.get_entities(
+            filters=[["project", "is", {"type":"Project", "id": project_id}]],
+            fields=self.entity_fields
+        )
+        return assets
+    
+    def get_assets_from_shot(self, shot_id):
+        assets = self.get_entities(
+            filters=["shots", "is", {"type": "Shot", "id": shot_id}],
+            fields=self.entity_fields
+        )
+        return assets
 
 if __name__ == "__main__":
 
@@ -88,6 +101,15 @@ if __name__ == "__main__":
     flow = ShotgridInstance()
     asset_manager = AssetManager(shotgun_instance=flow)
     
-    asset_manager.create_character(project_id=124, name="generic_asset_1", template_id=46)
-    asset_manager.create_environment(project_id=124, name="generic_environment_1", template_id=46)
-    asset_manager.create_prop(project_id=124, name="generic_prop_1", template_id=46)
+    # asset_manager.create_character(project_id=124, name="generic_asset_1", template_id=46)
+    # asset_manager.create_environment(project_id=124, name="generic_environment_1", template_id=46)
+    # asset_manager.create_prop(project_id=124, name="generic_prop_1", template_id=46)
+
+
+# result = [
+#         {'type': 'Asset', 'id': 1445, 'code': 'test_asset_01', 'sg_asset_type': 'Character'}, 
+#         {'type': 'Asset', 'id': 1478, 'code': 'generic_asset_1', 'sg_asset_type': 'Character'}, 
+#         {'type': 'Asset', 'id': 1479, 'code': 'generic_environment_1', 'sg_asset_type': 'Environment'}, 
+#         {'type': 'Asset', 'id': 1480, 'code': 'generic_prop_1', 'sg_asset_type': 'Prop'}
+#     ]
+

@@ -17,7 +17,7 @@ shotgrid-publisher/
 │   │   ├── __init__.py
 │   │   ├── shotgrid_manager.py      # Shotgrid API wrapper (base layer)
 │   │   ├── base_manager.py          # Base class for specialized managers
-│   │   ├── shotgrid_instance.py          # Authentication handler
+│   │   ├── auth_manager.py          # Authentication handler
 │   │   ├── crypto_manager.py        # Encryption/decryption utilities
 │   │   │
 │   │   └── managers/
@@ -86,7 +86,14 @@ shotgrid-publisher/
 │   ├── user_guide.md                # End-user documentation
 │   ├── developer_guide.md           # Developer setup guide
 │   ├── architecture.md              # Architecture overview
-│   └── api_documentation.md         # API reference
+│   ├── api_documentation.md         # API reference
+│   │
+│   └── diagrams/                    # Mermaid UML diagrams
+│       ├── README.md                # How to view diagrams
+│       ├── class_diagrams.md        # Class structure
+│       ├── sequence_diagrams.md     # Interaction flows
+│       ├── state_diagrams.md        # State machines
+│       └── component_diagrams.md    # Component relationships
 │
 ├── requirements/
 │   ├── base.txt                     # Core dependencies
@@ -197,6 +204,8 @@ pylint>=2.17.0
 # Documentation
 sphinx>=7.0.0
 sphinx-rtd-theme>=1.3.0
+myst-parser>=2.0.0          # Markdown support for Sphinx
+sphinxcontrib-mermaid>=0.9.2 # Mermaid diagram support
 ```
 
 ### `requirements/build.txt`
@@ -1620,4 +1629,662 @@ This software is proprietary and confidential. Unauthorized copying, distributio
 **Test Coverage:** Target 80%+
 
 **Last Updated:** 2024-11-12
+
+---
+
+## Mermaid UML Diagrams
+
+### Setting Up Mermaid Viewing
+
+Mermaid diagrams can be viewed in:
+- **GitHub/GitLab**: Native rendering in markdown files
+- **VS Code**: Install "Markdown Preview Mermaid Support" extension
+- **Sphinx Docs**: Using sphinxcontrib-mermaid
+- **Online**: https://mermaid.live/
+
+---
+
+## Task Board UML Diagrams
+
+### `docs/diagrams/class_diagrams.md`
+
+```markdown
+# Class Diagrams
+
+## Task Board Widget Hierarchy
+
+```mermaid
+classDiagram
+    class TaskBoardWidget {
+        -FilterToolbar filter_toolbar
+        -List~TaskColumnWidget~ columns
+        -TaskBoardManager manager
+        -QHBoxLayout layout
+        +__init__(auth_manager)
+        +refresh_board()
+        +apply_filters(filters)
+        +on_task_dropped(task_id, new_status)
+    }
+
+    class FilterToolbar {
+        -QComboBox project_selector
+        -QComboBox entity_filter
+        -QCheckBox[] type_filters
+        -QLineEdit search_box
+        -QCheckBox show_done_toggle
+        +__init__()
+        +get_current_filters()
+        +on_filter_changed()
+        +load_filter_state()
+        +save_filter_state()
+    }
+
+    class TaskColumnWidget {
+        -str status
+        -QLabel header
+        -QScrollArea scroll_area
+        -QVBoxLayout card_layout
+        -List~TaskCardWidget~ cards
+        -int max_visible_cards
+        +__init__(status, max_cards)
+        +add_task_card(task_data)
+        +remove_task_card(task_id)
+        +clear_cards()
+        +get_task_count()
+        +dragEnterEvent(event)
+        +dropEvent(event)
+    }
+
+    class TaskCardWidget {
+        -dict task_data
+        -QLabel name_label
+        -QLabel entity_badge
+        -QLabel type_badge
+        -QLabel priority_indicator
+        -QLabel assignee_label
+        +__init__(task_data)
+        +update_data(task_data)
+        +mousePressEvent(event)
+        +mouseMoveEvent(event)
+        +contextMenuEvent(event)
+        +create_context_menu()
+    }
+
+    class TaskContextMenu {
+        -TaskCardWidget parent_card
+        -PublishManager publish_manager
+        +__init__(card, managers)
+        +on_publish_clicked()
+        +on_view_details()
+        +on_edit_task()
+        +on_add_comment()
+    }
+
+    TaskBoardWidget "1" --> "1" FilterToolbar
+    TaskBoardWidget "1" --> "4" TaskColumnWidget
+    TaskColumnWidget "1" --> "*" TaskCardWidget
+    TaskCardWidget "1" --> "1" TaskContextMenu
+    TaskBoardWidget --> TaskBoardManager
+```
+
+## Core Managers Class Structure
+
+```mermaid
+classDiagram
+    class ShotgridManager {
+        -Shotgun sg
+        -dict connection_info
+        +connect(url, name, key)
+        +is_connected()
+        +find(entity_type, filters, fields)
+        +create(entity_type, data)
+        +update(entity_type, id, data)
+        +delete(entity_type, id)
+        +upload(entity_type, id, path)
+        +batch(requests)
+    }
+
+    class BaseManager {
+        -ShotgridManager sg
+        -Logger logger
+        +__init__(sg_manager)
+        #_ensure_connected()
+        #_log_operation(op, details)
+        #_validate_entity_dict(entity)
+    }
+
+    class TaskBoardManager {
+        +get_user_tasks(user_id, filters)
+        +update_task_status(task_id, status)
+        +get_task_filters(project_id)
+        +filter_tasks(tasks, criteria)
+        +get_task_details(task_id)
+        +add_task_comment(task_id, comment)
+    }
+
+    class PublishManager {
+        -dict publish_type_cache
+        +create_publish(project_id, entity, ...)
+        +get_publishes_for_entity(type, id)
+        +get_latest_publish(type, id)
+        +get_next_version_number(...)
+        +validate_publish_path(path)
+    }
+
+    class ProjectManager {
+        +get_all_projects(fields, active_only)
+        +get_project_by_id(id, fields)
+        +get_project_by_name(name, fields)
+    }
+
+    BaseManager <|-- TaskBoardManager
+    BaseManager <|-- PublishManager
+    BaseManager <|-- ProjectManager
+    BaseManager --> ShotgridManager : uses
+```
+
+---
+
+### `docs/diagrams/sequence_diagrams.md`
+
+```markdown
+# Sequence Diagrams
+
+## User Opens Task Board
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant MainWindow
+    participant TaskBoardWidget
+    participant FilterToolbar
+    participant TaskBoardManager
+    participant ShotgridManager
+    participant Shotgrid API
+
+    User->>MainWindow: Open Task Board
+    MainWindow->>TaskBoardWidget: create()
+    TaskBoardWidget->>FilterToolbar: create()
+    TaskBoardWidget->>TaskBoardManager: create(sg_manager)
+    
+    FilterToolbar->>FilterToolbar: load_saved_filters()
+    FilterToolbar->>TaskBoardWidget: filter_changed(filters)
+    
+    TaskBoardWidget->>TaskBoardManager: get_user_tasks(user_id, filters)
+    TaskBoardManager->>ShotgridManager: find('Task', filters, fields)
+    ShotgridManager->>Shotgrid API: GET /api/v1/entity/Task
+    Shotgrid API-->>ShotgridManager: tasks_data
+    ShotgridManager-->>TaskBoardManager: tasks_list
+    TaskBoardManager-->>TaskBoardWidget: grouped_tasks
+    
+    loop For each status column
+        TaskBoardWidget->>TaskColumnWidget: populate_cards(tasks)
+        loop For each task
+            TaskColumnWidget->>TaskCardWidget: create(task_data)
+        end
+    end
+    
+    TaskBoardWidget-->>User: Display board
+```
+
+## Drag and Drop Task Between Columns
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant TaskCardWidget
+    participant TaskColumnWidget
+    participant TaskBoardWidget
+    participant TaskBoardManager
+    participant ShotgridManager
+
+    User->>TaskCardWidget: Start drag
+    TaskCardWidget->>TaskCardWidget: mouseMoveEvent()
+    TaskCardWidget->>TaskCardWidget: Create QDrag with task_id
+    
+    User->>TaskColumnWidget: Drop on new column
+    TaskColumnWidget->>TaskColumnWidget: dropEvent()
+    TaskColumnWidget->>TaskColumnWidget: Validate drop
+    
+    TaskColumnWidget->>TaskBoardWidget: on_task_dropped(task_id, new_status)
+    TaskBoardWidget->>TaskBoardManager: update_task_status(task_id, new_status)
+    
+    TaskBoardManager->>ShotgridManager: update('Task', task_id, {'sg_status_list': status})
+    ShotgridManager->>ShotgridManager: Shotgrid API call
+    ShotgridManager-->>TaskBoardManager: success
+    
+    TaskBoardManager-->>TaskBoardWidget: status_updated
+    TaskBoardWidget->>TaskColumnWidget: remove_card(task_id) [old column]
+    TaskBoardWidget->>TaskColumnWidget: add_card(task_data) [new column]
+    
+    TaskBoardWidget-->>User: Card animated to new position
+    TaskBoardWidget->>User: Show toast notification
+```
+
+## Publish New Version from Task
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant TaskCardWidget
+    participant TaskContextMenu
+    participant PublishDialog
+    participant PublishManager
+    participant TaskBoardManager
+    participant TaskBoardWidget
+
+    User->>TaskCardWidget: Right-click
+    TaskCardWidget->>TaskContextMenu: show()
+    User->>TaskContextMenu: Click "Publish New Version"
+    
+    TaskContextMenu->>PublishDialog: open(task_data)
+    User->>PublishDialog: Configure publish (file, version, etc.)
+    User->>PublishDialog: Click "Publish"
+    
+    PublishDialog->>PublishManager: create_publish(...)
+    PublishManager->>PublishManager: validate_publish_path()
+    PublishManager->>PublishManager: get_next_version_number()
+    PublishManager->>PublishManager: Upload file to Shotgrid
+    PublishManager-->>PublishDialog: publish_created
+    
+    PublishDialog->>TaskBoardManager: update_task_status(task_id, "In Review")
+    TaskBoardManager-->>PublishDialog: status_updated
+    
+    PublishDialog-->>TaskContextMenu: publish_success
+    TaskContextMenu->>TaskBoardWidget: refresh_board()
+    
+    TaskBoardWidget->>TaskBoardWidget: Move card to "In Review" column
+    TaskBoardWidget-->>User: Show success notification
+    TaskBoardWidget-->>User: Card appears in "In Review"
+```
+
+## Apply Filters
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant FilterToolbar
+    participant TaskBoardWidget
+    participant TaskBoardManager
+    participant TaskColumnWidget
+
+    User->>FilterToolbar: Change project dropdown
+    FilterToolbar->>FilterToolbar: on_project_changed()
+    FilterToolbar->>FilterToolbar: Load entities for project
+    FilterToolbar->>FilterToolbar: Clear entity filter
+    
+    User->>FilterToolbar: Select entities
+    User->>FilterToolbar: Check task type filters
+    User->>FilterToolbar: Enter search text
+    
+    FilterToolbar->>FilterToolbar: get_current_filters()
+    FilterToolbar->>TaskBoardWidget: apply_filters(filters)
+    
+    TaskBoardWidget->>TaskBoardManager: get_user_tasks(user_id, filters)
+    TaskBoardManager->>TaskBoardManager: filter_tasks(all_tasks, criteria)
+    TaskBoardManager-->>TaskBoardWidget: filtered_tasks
+    
+    loop For each column
+        TaskBoardWidget->>TaskColumnWidget: clear_cards()
+        TaskBoardWidget->>TaskColumnWidget: populate_cards(filtered_tasks)
+    end
+    
+    TaskBoardWidget-->>User: Updated board with filters applied
+```
+
+---
+
+### `docs/diagrams/state_diagrams.md`
+
+```markdown
+# State Diagrams
+
+## Task Status State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> ToDo: Task Created
+    
+    ToDo --> InProgress: User drags card
+    InProgress --> ToDo: User drags back
+    
+    InProgress --> InReview: User publishes<br/>(automatic)
+    InProgress --> InReview: User drags card
+    
+    InReview --> InProgress: Needs revisions<br/>(user drags)
+    InReview --> ToDo: Rejected<br/>(user drags)
+    InReview --> Done: Approved<br/>(automatic or manual)
+    
+    Done --> [*]
+    
+    note right of InReview
+        Automatic transition on:
+        - Successful publish
+        - Shotgrid approval
+    end note
+```
+
+## Task Board UI State
+
+```mermaid
+stateDiagram-v2
+    [*] --> Loading
+    
+    Loading --> Idle: Data loaded
+    Loading --> Error: Load failed
+    
+    Idle --> Filtering: User applies filter
+    Filtering --> Loading: Fetch filtered data
+    
+    Idle --> Dragging: User starts drag
+    Dragging --> Idle: Drop cancelled
+    Dragging --> Updating: Drop completed
+    
+    Idle --> Publishing: User clicks publish
+    Publishing --> Updating: Publish successful
+    Publishing --> Idle: Publish cancelled
+    Publishing --> Error: Publish failed
+    
+    Updating --> Loading: Refresh data
+    
+    Error --> Idle: User dismisses error
+    Error --> Loading: User retries
+```
+
+## Filter State Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> DefaultFilters: App start
+    
+    DefaultFilters --> ProjectSelected: User selects project
+    ProjectSelected --> EntitiesLoaded: Load entities
+    
+    EntitiesLoaded --> Filtering: User adjusts filters
+    Filtering --> Filtering: Multiple filter changes
+    
+    Filtering --> ResultsShown: Apply filters
+    ResultsShown --> Filtering: User modifies filters
+    
+    ResultsShown --> FiltersSaved: User closes app
+    FiltersSaved --> [*]
+    
+    note right of DefaultFilters
+        Default: Current user's tasks
+        Current project
+        All entities
+        All task types
+        Hide Done tasks
+    end note
+```
+
+---
+
+### `docs/diagrams/component_diagrams.md`
+
+```markdown
+# Component Diagrams
+
+## Overall Application Architecture
+
+```mermaid
+graph TB
+    subgraph "UI Layer"
+        A[MainWindow]
+        B[LoginDialog]
+        C[TaskBoardWidget]
+        D[PublishDialog]
+    end
+    
+    subgraph "Business Logic Layer"
+        E[AuthManager]
+        F[TaskBoardManager]
+        G[PublishManager]
+        H[ProjectManager]
+    end
+    
+    subgraph "Data Access Layer"
+        I[ShotgridManager]
+        J[CryptoManager]
+    end
+    
+    subgraph "External Services"
+        K[Shotgrid API]
+        L[File System]
+    end
+    
+    A --> B
+    A --> C
+    A --> D
+    
+    B --> E
+    C --> F
+    D --> G
+    C --> H
+    
+    E --> I
+    E --> J
+    F --> I
+    G --> I
+    H --> I
+    
+    I --> K
+    J --> L
+    G --> L
+```
+
+## Task Board Widget Component Structure
+
+```mermaid
+graph TB
+    A[TaskBoardWidget]
+    B[FilterToolbar]
+    C1[TaskColumnWidget<br/>To Do]
+    C2[TaskColumnWidget<br/>In Progress]
+    C3[TaskColumnWidget<br/>In Review]
+    C4[TaskColumnWidget<br/>Done]
+    
+    D1[TaskCardWidget 1]
+    D2[TaskCardWidget 2]
+    D3[TaskCardWidget 3]
+    D4[TaskCardWidget 4]
+    D5[TaskCardWidget 5]
+    D6[TaskCardWidget 6]
+    
+    E[TaskContextMenu]
+    F[TaskBoardManager]
+    
+    A --> B
+    A --> C1
+    A --> C2
+    A --> C3
+    A --> C4
+    A --> F
+    
+    C1 --> D1
+    C1 --> D2
+    C2 --> D3
+    C2 --> D4
+    C3 --> D5
+    C4 --> D6
+    
+    D1 -.->|right-click| E
+    D3 -.->|right-click| E
+    D5 -.->|right-click| E
+    
+    B -.->|filter event| A
+    D1 -.->|drag event| C2
+    D3 -.->|drag event| C3
+```
+
+## Data Flow Architecture
+
+```mermaid
+graph LR
+    subgraph "Client Side"
+        A[Task Board UI]
+        B[Local Cache]
+        C[Filter State]
+    end
+    
+    subgraph "Manager Layer"
+        D[TaskBoardManager]
+        E[PublishManager]
+    end
+    
+    subgraph "API Layer"
+        F[ShotgridManager]
+    end
+    
+    subgraph "External"
+        G[Shotgrid Server]
+        H[File Storage]
+    end
+    
+    A -->|query tasks| D
+    D -->|check cache| B
+    B -->|cache miss| D
+    D -->|API call| F
+    F -->|HTTP request| G
+    G -->|task data| F
+    F -->|response| D
+    D -->|update cache| B
+    D -->|tasks| A
+    
+    A -->|filter change| C
+    C -->|re-query| D
+    
+    A -->|publish| E
+    E -->|upload file| H
+    E -->|create publish| F
+    F -->|update| G
+```
+
+## Drag and Drop Flow
+
+```mermaid
+flowchart TB
+    A[User starts drag on TaskCard] --> B{Drag data valid?}
+    B -->|No| C[Cancel drag]
+    B -->|Yes| D[Show drag cursor]
+    
+    D --> E[User hovers over column]
+    E --> F{Valid drop target?}
+    
+    F -->|No| G[Show 'not allowed' cursor]
+    F -->|Yes| H[Highlight drop zone]
+    
+    G --> E
+    H --> I{User releases mouse?}
+    
+    I -->|No| E
+    I -->|Yes| J[Execute drop]
+    
+    J --> K[Call TaskBoardManager.update_task_status]
+    K --> L[Update Shotgrid via API]
+    L --> M{Update successful?}
+    
+    M -->|No| N[Show error<br/>Revert card position]
+    M -->|Yes| O[Animate card to new column]
+    
+    O --> P[Update UI state]
+    P --> Q[Show success notification]
+```
+
+---
+
+### `docs/diagrams/README.md`
+
+```markdown
+# Shotgrid Publisher - UML Diagrams
+
+This directory contains UML diagrams for the Shotgrid Publisher application, created using Mermaid syntax.
+
+## Viewing Diagrams
+
+### GitHub/GitLab
+Diagrams render automatically when viewing markdown files.
+
+### VS Code
+1. Install extension: "Markdown Preview Mermaid Support"
+2. Open any `.md` file
+3. Press `Ctrl+Shift+V` (Windows/Linux) or `Cmd+Shift+V` (Mac)
+
+### Online Editor
+Visit [Mermaid Live Editor](https://mermaid.live/) and paste diagram code.
+
+### Sphinx Documentation
+Diagrams are automatically rendered in the built documentation.
+
+## Diagram Types
+
+### Class Diagrams (`class_diagrams.md`)
+- Widget hierarchy
+- Manager class structure
+- Inheritance relationships
+- Dependencies
+
+### Sequence Diagrams (`sequence_diagrams.md`)
+- User interaction flows
+- Inter-component communication
+- API call sequences
+- Event handling
+
+### State Diagrams (`state_diagrams.md`)
+- Task status transitions
+- UI state management
+- Filter state flow
+
+### Component Diagrams (`component_diagrams.md`)
+- System architecture
+- Component relationships
+- Data flow
+- Layer structure
+
+## Updating Diagrams
+
+When modifying code structure:
+1. Update relevant diagram file
+2. Verify rendering in preview
+3. Commit changes with code
+
+## Mermaid Syntax Reference
+
+- [Official Documentation](https://mermaid.js.org/)
+- [Class Diagrams](https://mermaid.js.org/syntax/classDiagram.html)
+- [Sequence Diagrams](https://mermaid.js.org/syntax/sequenceDiagram.html)
+- [State Diagrams](https://mermaid.js.org/syntax/stateDiagram.html)
+- [Flowcharts](https://mermaid.js.org/syntax/flowchart.html)
+```
+
+---
+
+## Using Diagrams in Development
+
+### During Planning
+- Review class diagrams before implementation
+- Use sequence diagrams to understand flow
+- Reference state diagrams for logic
+
+### During Implementation
+- Keep diagrams open as reference
+- Update diagrams as code evolves
+- Use for code review discussions
+
+### During Documentation
+- Include diagram links in code comments
+- Reference in PR descriptions
+- Use in technical design documents
+
+### Example Code Comment:
+```python
+class TaskBoardWidget(QWidget):
+    """
+    Main task board container widget.
+    
+    See class diagram: docs/diagrams/class_diagrams.md#task-board-widget-hierarchy
+    See sequence: docs/diagrams/sequence_diagrams.md#user-opens-task-board
+    """
+    pass
+```
 ```

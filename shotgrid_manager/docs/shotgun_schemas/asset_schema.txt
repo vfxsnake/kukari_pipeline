@@ -95,3 +95,5 @@ step_16 {'name': {'value': 'Texture', 'editable': True}, 'description': {'value'
 
 
 vaild_types sg_asset_type: ['Character', 'Environment', 'Prop', 'FX', 'Graphic', 'Matte Painting', 'Vehicle', 'Weapon', 'Model', 'Theme', 'Zone', 'Part']
+
+fields = ["task_template", "sg_versions", "sg_published_files", "tasks", "sg_status_list", "shots"]

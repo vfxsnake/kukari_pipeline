@@ -7,13 +7,14 @@ import logging
 
 class FileManager(BaseManager):
     entity = "PublishedFile"
-    
-    def get_published_files(self, task_id)->List[dict]:
-        filters = [["task", "is", {type:"Task", 'id': task_id}]]
-        fields = [
+    entity_fields =  [
             'code','name', 'sg_versions', 'sg_status_list', 'created_at', 'project', 'id',
             'entity', 'entity.sg_asset_type', 'entity.sg_shot_type' 
         ]
+    
+    def get_published_files(self, task_id)->List[dict]:
+        filters = [["task", "is", {type:"Task", 'id': task_id}]]
+        fields = self.entity_fields
         return self.get_entities(filters=filters, fields=fields)
 
 
@@ -129,3 +130,15 @@ if __name__ == "__main__":
 #         'display_name': 'CianLu_V03', 
 #         'created_at': datetime.datetime(2025, 11, 16, 0, 6, 47, tzinfo=<shotgun_api3.lib.sgtimezone.LocalTimezone object at 0x7ffbfaae4510>), 
 #     }
+
+    data = [
+        {'type': 'Task', 'id': 5959, 'content': '01_Layout', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5960, 'content': '00_Animatic', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5961, 'content': '02_Animacion', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5962, 'content': '06_Comp', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5963, 'content': '03_Assembly', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5964, 'content': '04_Lighting', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5965, 'content': '08_Output', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5966, 'content': '05_Render', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'}, 
+        {'type': 'Task', 'id': 5967, 'content': '07_Fx', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1174, 'name': 'generic_shot_00', 'type': 'Shot'}, 'sg_status_list': 'wtg'},
+        ]

@@ -8,6 +8,7 @@ from utils.logger import setup_logging
 class BaseManager():
     logger = logging.getLogger(__name__)
     entity = ""
+    entity_fields = ["id", "code", "name"]
     
     def __init__(self, shotgun_instance:ShotgridInstance):
         self.manager = shotgun_instance
