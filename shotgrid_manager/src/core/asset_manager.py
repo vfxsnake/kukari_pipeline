@@ -101,7 +101,22 @@ if __name__ == "__main__":
     flow = ShotgridInstance()
     asset_manager = AssetManager(shotgun_instance=flow)
     
-    # asset_manager.create_character(project_id=124, name="generic_asset_1", template_id=46)
+    # cianlu_01 = asset_manager.create_character(project_id=124, name="01_Cianlu", template_id=46)
+    # mascota_bebe_01 = asset_manager.create_character(project_id=124, name="01_MascotaBebe", template_id=46)
+    # mascota_adulta_02 = asset_manager.create_character(project_id=124, name="02_MascotaAdulta", template_id=46)
+
+    # int_depa_cianlu_01 = asset_manager.create_environment(project_id=124, name="01_Int_Depa_Cianlu", template_id=46)
+    # aldea_principal_03 = asset_manager.create_environment(project_id=124, name="03_AldeaPrincipal", template_id=46)
+    # risco_vuelo_04 = asset_manager.create_environment(project_id=124, name="04_riscoVuelo", template_id=46)
+
+    moto_01 = asset_manager.create_prop(project_id=124, name="01_Int_Depa_Cianlu", template_id=46)
+    tablet_02 = asset_manager.create_prop(project_id=124, name="03_AldeaPrincipal", template_id=46)
+    mochila_voladora_03 = asset_manager.create_prop(project_id=124, name="04_riscoVuelo", template_id=46)
+    
+    print(moto_01)
+    print(tablet_02)
+    print(mochila_voladora_03)
+
     # asset_manager.create_environment(project_id=124, name="generic_environment_1", template_id=46)
     # asset_manager.create_prop(project_id=124, name="generic_prop_1", template_id=46)
 
@@ -113,3 +128,14 @@ if __name__ == "__main__":
 #         {'type': 'Asset', 'id': 1480, 'code': 'generic_prop_1', 'sg_asset_type': 'Prop'}
 #     ]
 
+# {'id': 1511, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '01_Cianlu', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Character', 'type': 'Asset'}
+# {'id': 1512, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '01_MascotaBebe', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Character', 'type': 'Asset'}
+# {'id': 1513, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '02_MascotaAdulta', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Character', 'type': 'Asset'}
+
+# {'id': 1514, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '01_Int_Depa_Cianlu', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Environment', 'type': 'Asset'}
+# {'id': 1515, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '03_AldeaPrincipal', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Environment', 'type': 'Asset'}
+# {'id': 1516, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '04_riscoVuelo', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Environment', 'type': 'Asset'}
+
+# {'id': 1517, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '01_Int_Depa_Cianlu', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Prop', 'type': 'Asset'}
+# {'id': 1518, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '03_AldeaPrincipal', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Prop', 'type': 'Asset'}
+# {'id': 1519, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '04_riscoVuelo', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Prop', 'type': 'Asset'}

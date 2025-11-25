@@ -52,11 +52,91 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
     flow = ShotgridInstance()
-    asset_manager = ShotManager(shotgun_instance=flow)
-    
-    
+    shot_manager = ShotManager(shotgun_instance=flow)
 
-    print(created_shot)
+    # shot_list = [
+    #     "sq010_010",
+    #     "sq010_020",
+    #     "sq010_050",
+    #     "sq010_060",
+    #     "sq010_070",
+    #     "sq010_080",
+    #     "sq010_090",
+    #     "sq010_100",
+    #     "sq010_110",
+    #     "sq010_120",
+    #     "sq010_130",
+    #     "sq010_140",
+    #     "sq020_010",
+    #     "sq020_020",
+    #     "sq020_030",
+    #     "sq020_040",
+    #     "sq020_050",
+    #     "sq020_060",
+    #     "sq020_070",
+    #     "sq020_080",
+    #     "sq030_010",
+    #     "sq030_020",
+    #     "sq030_030",
+    #     "sq030_040",
+    #     "sq030_050",
+    #     "sq030_060",
+    #     "sq040_010",
+    #     "sq040_020",
+    #     "sq040_030",
+    #     "sq040_040",
+    #     "sq040_050",
+    #     "sq040_060",
+    #     "sq040_070",
+    #     "sq040_080",
+    #     "sq050_010",
+    #     "sq050_020",
+    #     "sq050_030",
+    #     "sq050_040",
+    #     "sq065_010",
+    #     "sq065_020",
+    #     "sq070_030",
+    #     "sq070_040",
+    #     "sq070_050",
+    #     "sq070_060",
+    #     "sq070_070",
+    #     "sq070_080",
+    #     "sq070_090",
+    #     "sq080_010",
+    #     "sq080_020",
+    #     "sq080_040",
+    #     "sq090_010",
+    #     "sq090_020",
+    #     "sq090_030",
+    #     "sq090_040",
+    #     "sq090_050",
+    #     "sq090_060",
+    #     "sq090_070",
+    #     "sq090_080",
+    #     "sq090_090",
+    #     "sq090_100",
+    #     "sq090_110",
+    #     "sq090_120",
+    #     "sq090_130",
+    #     "sq090_140",
+    #     "sq090_150",
+    #     "sq090_160",
+    #     "sq090_170",
+    #     "sq090_180",
+    #     "sq090_190",
+    #     "sq090_200",
+    #     "sq090_210",
+    #     "sq090_210a",
+    #     "sq100_010"
+    # ]
+
+    # for shot in shot_list:
+    #     shot_manager.create_shot(
+    #         project_id=124, 
+    #         name=shot, 
+    #         task_template={'type': 'TaskTemplate', 'id': 47, 'code': 'Kukari_Animation_Shots'}
+    #     )
+    #     print(f"{shot} has successfully created")
 
 
 

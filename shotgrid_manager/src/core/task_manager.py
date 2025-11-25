@@ -16,20 +16,31 @@ class TaskManager(BaseManager):
         )
         return task_list
 
-    def get_tasks_from_shot(self, shot_id:int):
+    def get_tasks_from_shot(self, shot_id:int)->List[dict]:
         task_list = self.get_entities( 
             filters=[["entity", "is", {"type": "Shot", "id":shot_id}]], 
             fields= self.entity_fields
         )
         return task_list
 
-    def get_tasks_from_asset(self, asset_id:int):
-        pass
+    def get_tasks_from_asset(self, asset_id:int)->List[dict]:
+        task_list = self.get_entities(
+            filters=[["entity", "is", {"type": "Asset", "id": asset_id}]],
+            fields=self.entity_fields
+        )
+        return task_list
+
+    def get_tasks_from_project(self, project_id:int):
+        task_list = self.get_entities(
+            filters=[["project", "is", {"type":"Project", "id":project_id}]],
+            fields=self.entity_fields
+        )
+        return task_list
 
     def update_status(self, task_id, new_status)->dict:
         data = {'sg_status_list': new_status}
         return self.update_entity(task_id=task_id, new_data=data)
-    
+
 
 if __name__ == "__main__":
     from core.shotgrid_instance import ShotgridInstance
@@ -38,6 +49,6 @@ if __name__ == "__main__":
 
     flow = ShotgridInstance()
     task_manager = TaskManager(shotgun_instance=flow)
-    data = task_manager.get_tasks_from_shot(shot_id=1174)
+    data = task_manager.get_tasks_from_project(project_id=124)
     logger.info(f"data: {data}")
     task_manager.close()

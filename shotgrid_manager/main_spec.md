@@ -6,41 +6,36 @@
 shotgrid-publisher/
 ├── src/
 │   ├── __init__.py
-│   ├── main.py                      # Application entry point
+│   ├── main.py                         # Application entry point
 │   │
 │   ├── config/
 │   │   ├── __init__.py
-│   │   ├── settings.py              # Application settings
-│   │   └── shotgrid_config.py       # Shotgrid connection config (non-sensitive)
+│   │   ├── settings.py                 # Application settings
+│   │   └── shotgrid_config.py          # Shotgrid connection config (non-sensitive)
 │   │
 │   ├── core/
 │   │   ├── __init__.py
-│   │   ├── shotgrid_manager.py      # Shotgrid API wrapper (base layer)
-│   │   ├── base_manager.py          # Base class for specialized managers
-│   │   ├── auth_manager.py          # Authentication handler
-│   │   ├── crypto_manager.py        # Encryption/decryption utilities
-│   │   │
-│   │   └── managers/
-│   │       ├── __init__.py
-│   │       ├── publish_manager.py   # Publish operations
-│   │       ├── project_manager.py   # Project operations
-│   │       ├── entity_manager.py    # Generic entity operations (Shots, Assets)
-│   │       └── task_manager.py      # Task operations
+│   │   ├── shotgrid_instance.py        # Shotgrid API wrapper holds the connection to shotgrid web site.
+│   │   ├── base_manager.py             # Base class for specialized managers, wraps the basic shotgun actions.
+│   │   ├── asset_manager.py            # Base class for specialized in assets, creates and queries asset instances.
+│   │   ├── attachment_manager.py       # Base class for specialized in attachments, creates, edits and queries attachment instances.
+│   │   ├── published_file_manager.py   # Base class for specialized in published files, creates, edits and queries published_file instances.
+│   │   ├── shot_manager.py             # Base class for specialized in shots, creates, edits and queries Shot instances.
+│   │   ├── task_manager.py             # Base class for specialized in tasks, creates, edits and queries Task instances.
+│   │   ├── version_manager.py          # Base class for specialized in versions, creates, edits and queries Version instances.
+│   │   ├── auth_manager.py             # Authentication handler
+│   │   ├── crypto_manager.py           # Encryption/decryption utilities
 │   │
 │   ├── ui/
 │   │   ├── __init__.py
-│   │   ├── main_window.py           # Main application window
+│   │   ├── main_window.py              # Main application window
 │   │   │
 │   │   ├── dialogs/
 │   │   │   ├── __init__.py
-│   │   │   ├── login_dialog.py      # Login/authentication dialog
-│   │   │   └── publish_dialog.py    # Publish configuration dialog
 │   │   │
 │   │   ├── widgets/
 │   │   │   ├── __init__.py
-│   │   │   ├── file_browser.py      # File selection widget
-│   │   │   ├── publish_list.py      # Publish history widget
-│   │   │   └── entity_browser.py    # Entity selection widget
+│   │   │   ├── task_viewer_widget.py   # jira board type widget displaying task for given user. 
 │   │   │
 │   │   └── resources/
 │   │       ├── icons/               # Application icons
@@ -131,24 +126,23 @@ shotgrid-publisher/
 │              Specialized Managers Layer                     │
 │                  (Composition Pattern)                      │
 │                                                             │
-│  BaseManager ← PublishManager                              │
-│  (utilities)   ProjectManager                              │
-│                EntityManager                               │
-│                TaskManager                                 │
+│  BaseManager ←    TaskManager                               │
+│  (CRUD operation) AssetManager                              │
+│                   PublishedFileManagers                     │
+│                   TaskManager                               │
 │                                                             │
-│  All inject same ShotgridManager instance via __init__     │
+│  All inject same ShotgridManager instance via __init__      │
 └────────────────────────────┬────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────┐
-│           ShotgridManager (API Wrapper)                     │
-│  • Wraps shotgun_api3.Shotgun                              │
+│           shotgrid_instance (API Wrapper)                   │
+│  • Wraps shotgun_api3.Shotgun                               │
 │  • Connection management                                    │
-│  • Generic CRUD operations                                  │
 │  • Error handling & retries                                 │
 └────────────────────────────┬────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────┐
-│              shotgun_api3.Shotgun                          │
+│              shotgun_api3.Shotgun                           │
 │              (Autodesk Official SDK)                        │
 └─────────────────────────────────────────────────────────────┘
 ```
