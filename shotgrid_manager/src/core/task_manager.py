@@ -48,7 +48,8 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
     flow = ShotgridInstance()
+    flow.connect()
     task_manager = TaskManager(shotgun_instance=flow)
     data = task_manager.get_tasks_from_project(project_id=124)
     logger.info(f"data: {data}")
-    task_manager.close()
+    flow.disconnect()

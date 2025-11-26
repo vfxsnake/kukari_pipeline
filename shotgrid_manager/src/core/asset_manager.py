@@ -83,23 +83,28 @@ class AssetManager(BaseManager):
         return assets
 
 if __name__ == "__main__":
+    """
+    Test AssetManager with persistent connection pattern.
 
-# SandBox project:
-# {'id': 124, 'name': 'SandBox', 'type': 'Project'}
+    SandBox project:
+    {'id': 124, 'name': 'SandBox', 'type': 'Project'}
 
-# Kukari Task templates
-# [ 
-#     {'type': 'TaskTemplate', 'id': 46, 'code': 'Kukari_Animation_Assets'}, 
-#     {'type': 'TaskTemplate', 'id': 47, 'code': 'Kukari_Animation_Shots'}
-# ]
-
-
+    Kukari Task templates:
+    [
+        {'type': 'TaskTemplate', 'id': 46, 'code': 'Kukari_Animation_Assets'},
+        {'type': 'TaskTemplate', 'id': 47, 'code': 'Kukari_Animation_Shots'}
+    ]
+    """
     from core.shotgrid_instance import ShotgridInstance
     setup_logging()
     logger = logging.getLogger(__name__)
 
-    flow = ShotgridInstance()
-    asset_manager = AssetManager(shotgun_instance=flow)
+    # Connect once at startup
+    sg_instance = ShotgridInstance()
+    sg_instance.connect()
+
+    # Create asset manager with shared connection
+    asset_manager = AssetManager(shotgun_instance=sg_instance)
     
     # cianlu_01 = asset_manager.create_character(project_id=124, name="01_Cianlu", template_id=46)
     # mascota_bebe_01 = asset_manager.create_character(project_id=124, name="01_MascotaBebe", template_id=46)
@@ -109,16 +114,20 @@ if __name__ == "__main__":
     # aldea_principal_03 = asset_manager.create_environment(project_id=124, name="03_AldeaPrincipal", template_id=46)
     # risco_vuelo_04 = asset_manager.create_environment(project_id=124, name="04_riscoVuelo", template_id=46)
 
+    # Example: Create multiple assets using the same connection
     moto_01 = asset_manager.create_prop(project_id=124, name="01_Int_Depa_Cianlu", template_id=46)
     tablet_02 = asset_manager.create_prop(project_id=124, name="03_AldeaPrincipal", template_id=46)
     mochila_voladora_03 = asset_manager.create_prop(project_id=124, name="04_riscoVuelo", template_id=46)
-    
+
     print(moto_01)
     print(tablet_02)
     print(mochila_voladora_03)
 
     # asset_manager.create_environment(project_id=124, name="generic_environment_1", template_id=46)
     # asset_manager.create_prop(project_id=124, name="generic_prop_1", template_id=46)
+
+    # Disconnect once at shutdown
+    sg_instance.disconnect()
 
 
 # result = [

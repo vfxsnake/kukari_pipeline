@@ -185,10 +185,8 @@ if __name__ == '__main__':
     # 1. Create the Model/Manager
     
     flow = ShotgridInstance()
-
     task_manager = TaskManager(flow)
-    task_manager.connect()
-    data = task_manager.get_tasks(19)
+    data = task_manager.get_tasks_from_user(user_id=19)
     data_model = ShotgunTaskDataModel(data)
 
     # 2. Create the View/Widget and inject the model
@@ -198,3 +196,4 @@ if __name__ == '__main__':
     viewer_widget.show()
     
     sys.exit(app.exec())
+    task_manager.close()
