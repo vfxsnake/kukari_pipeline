@@ -48,23 +48,21 @@ class AttachmentManager(BaseManager):
         return attachments
 
     def upload_attachment_to_project(self, project_id:int, file_path:str)-> int:
-        self.connect()
+        self._ensure_connected()
 
         uploaded_file = self.manager.instance.upload(
             entity_type="Project",
             entity_id=project_id,
             path=file_path,
         )
-        self.close()
         return uploaded_file
     
     def download_attachment(self, attachment_id:int, target_path):
-        self.connect(0)
-        self.manager.instance.download_attachment( 
-            attachment_id=attachment_id, 
+        self._ensure_connected()
+        self.manager.instance.download_attachment(
+            attachment_id=attachment_id,
             file_path=target_path
         )
-        self.close()
 
     def download_attachments(self, published_file_id, path_builder:PathBuilder):
         pass
@@ -87,30 +85,24 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
 
     flow = ShotgridInstance()
+    flow.connect()
     attachment_manager = AttachmentManager(shotgun_instance=flow)
     # uploaded_attachment = file_manager.upload_attachment_to_project(project_id=124, file_path="/mnt/c/Projects/kukari_projects/CianLu_V02.abc")
-    uploaded_attachment = attachment_manager.get_attachment(attachment_id=704)
+    uploaded_attachment = attachment_manager.get_attachment(attachment_id=746)
     
-    logger.info(f"upload_file: {uploaded_attachment}")
+    logger.info(f"upload_file =  {uploaded_attachment}")
+    flow.disconnect()
 
-    # attachment id: 704
-
-    # upload_file={
-    #     'type': 'Attachment', 
-    #     'id': 704, 
-    #     'file_size': None, 
-    #     'attachment_reference_links': [], 
-    #     'cached_display_name': 'CianLu_V02.abc', 
-    #     'original_fname': 'CianLu_V02.abc', 
-    #     'local_storage': None, 
-    #     'image_source_entity': None, 
-    #     'attachment_links': [{'id': 124, 'name': 'SandBox', 'type': 'Project'}], 
-    #     # 'this_file': {'url': 'https://sg-media-usor-01.s3-accelerate.amazonaws.com/91c83671abbd16b6a4f171197665dad9033511d4/6e69f7d9a7e5638b120ebec0a77b264fead4333b/CianLu_V02.abc?response-content-disposition=filename%3D%22CianLu_V02.abc%22&x-amz-meta-user-id=1&x-amz-meta-user-type=ApiUser&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAYJG6Z4JIQAQT7PLG%2F20251124%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251124T031443Z&X-Amz-SignedHeaders=host&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEIT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCj1PxD3b%2FHwf5UaA%2Fi3RFigoTDykK9g5PnHbFzTpMI4gIgRjUtJT2fD2hICwkeikicEE2syGSXzgzI%2BZOOq1HjcacqmAIITBAAGgw1Njk1NTA0MzA4MDEiDEp%2BbvGcYBBA3zt34yr1Ael8IYw6zrvouzPLH4k1yNn3Y90EQ67dmDuauUKNA58o7i5qHRv%2FYAlUwQxRYy2i%2BPLC5P7%2FVYP57tUYoyn5mfNEdbkn5CczrXYqbz8Ay%2F4h5HnYTvvtSGbEM2haXCSZZlzTpTKTqNkk%2B3ILis1yEFB6FcRiYVmWPH%2F%2ByLhnQVRfrJb90pjISycUCK4frGgk82hTWG6Tizk%2FqzJ6DF521mj0SERkIb56BLy99tT6ueRtYz0CPRIP%2Fsw0bMRsLI%2BDCSMbVYpabk26%2FG4s5Qx2oLMNpQWw2hLLgXZnjOYuhdJroi7AXyImt84F6cJ2WZWI3a2xNRljMKObj8kGOp0BGkOeiFwWXu5fNT%2Bey9U1lPittQna9Zzm0Kdjg8B6irvUQsLUa91Vicvv84cgDnh83pOKOR3o4nXYwFdmxl%2B%2F1t%2Fr1UDJLgM7Q3Y52KVaykQmX3d7MC%2Fh6kCRLBoMbSqL6sKzM5cXE9AY9l%2FUXKEBlXEiYeoZAdVNUiq8tnHzLY1jOyuOLbCyCzn8lTqBCpTw%2B50kj41QQZEGn2xOuA%3D%3D&X-Amz-Signature=6e1dec8e8df156f62ff796ce5eadf7aa29a752983d7821e89f924ced0b7bc3c8', 'name': 'CianLu_V02.abc', 'content_type': 'application/octet-stream', 'link_type': 'upload', 'type': 'Attachment', 'id': 704},
+    # upload_file= {
+    #     'type': 'Attachment', 'id': 746, 'file_size': None, 'attachment_reference_links': [], 'cached_display_name': 'CianLu_V02.abc', 
+    #     'original_fname': 'CianLu_V02.abc', 'local_storage': None, 'image_source_entity': None, 
+    #     'attachment_links': [
+    #         {'id': 5947, 'name': '002_Modeling', 'type': 'Task'}, 
+    #         {'id': 77, 'name': 'CianLu_V02.v004', 'type': 'PublishedFile'}, 
+    #         {'id': 7031, 'name': 'generic_prop_1_002_Modeling_v004', 'type': 'Version'}
+    #         ], 
+    #     'this_file': {'url': 'https://sg-media-usor-01.s3-accelerate.amazonaws.com/91c83671abbd16b6a4f171197665dad9033511d4/19784f52326e76cd283008a10bfc7f6250735285/CianLu_V02.abc?response-content-disposition=filename%3D%22CianLu_V02.abc%22&x-amz-meta-user-id=1&x-amz-meta-user-type=ApiUser&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAYJG6Z4JI6AZDZGAY%2F20251128%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251128T201100Z&X-Amz-SignedHeaders=host&X-Amz-Expires=900&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQDVTpIu9zVPigrUlARuV3MWbyh9raf36Q2a6OghBW4b2AIgO53dAHakuS%2BG1TpfqAiLrdeilegSBc%2BZ8SpawxWSvQIqoQIIvf%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw1Njk1NTA0MzA4MDEiDDtTTLpYOMLEWpiVkCr1AdU%2BcRYSMUasJVhtB3fbcOxZ0ZEMtVvo%2FdQHB2172c6b9Ae63Ui1K5TN4u8H3rWeOvsCGCJUu4niJrtcc6aT4KUqXSVvPjr1fJ26s6t2th5fKv2OFJYzGtCJtD4ERNObvZO6NzNinGj1hQFtysKXjuEG%2FSZ0qzwKK1aZHPfrst9rEgJ3%2F5gHsU%2F4qlxEtTDVlvM3LFLPXB7fVrBpH1RR0v9hruzLVIXtQ8olR6TnkqfFoitkH9FncvV0vgp1vDPkuLWH5jgoYPFum6EtrXZu4MAOcOWPjgr5dNCPUOlD00u%2B6xZPKRwE%2BmLMbukGsRYDij7vGX5jMLv7p8kGOp0B71mc%2Bk0tF10sECzal9RbRvfBWx2%2B7ApW6mBUKfMRawPLP4M5QXSaB6iYe8IryOT6OGKkFebW%2FJbgguh3fHPXbtQ3y6A1SM6a2J1DMrX2WZf15X2%2FaLgkggDTFs%2BgLigtqNZHlmDltG5viKf2e1jvRB1iUalWqeO5Mc16bi7B3xGnvjrMrY5w1hMG2sngmDfklgRwZPZkwvMePrPK2Q%3D%3D&X-Amz-Signature=89c72834a5bc816de9399466e09cc9bb6808f7aaa1605137b2f12ce4ef365f51', 'name': 'CianLu_V02.abc', 'content_type': 'application/octet-stream', 'link_type': 'upload', 'type': 'Attachment', 'id': 746}, 
     #     'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 
-    #     'file_extension': None, 
-    #     'description': None, 
-    #     'filename': 'CianLu_V02.abc', 
-    #     'display_name': 'CianLu_V02.abc', 
-    #     'sg_type': None, 
-    #     # 'created_at': datetime.datetime(2025, 11, 23, 21, 42, 41, tzinfo=<shotgun_api3.lib.sgtimezone.LocalTimezone object at 0x716e93e6f650>)
-    # }
+    #     'file_extension': None, 'description': None, 'filename': 'CianLu_V02.abc', 'display_name': 'CianLu_V02.abc', 'sg_type': None, 
+    #     # 'created_at': datetime.datetime(2025, 11, 28, 15, 10, 14, tzinfo=<shotgun_api3.lib.sgtimezone.LocalTimezone object at 0x7e45ef79bd50>)
+    #     }

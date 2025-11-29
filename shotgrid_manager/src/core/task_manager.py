@@ -6,7 +6,13 @@ import logging
 
 class TaskManager(BaseManager):
     entity = "Task"
-    entity_fields = ["id", "code", "content", "project", "due_date", "sg_priority_1", "entity", "sg_status_list"]
+    entity_fields = ["id", "code", "content", "project", "due_date", "sg_priority_1", "entity", "sg_status_list", "task_assignees", "sg_versions"]
+
+    def get_task(self, task_id:int)->dict:
+        return self.get_entity(
+            filters=[["id", "is", task_id]],
+            fields= self.entity_fields
+        )
 
     def get_tasks_from_user(self, user_id:int)->List[dict]:
 
@@ -38,8 +44,25 @@ class TaskManager(BaseManager):
         return task_list
 
     def update_status(self, task_id, new_status)->dict:
-        data = {'sg_status_list': new_status}
+        data = {"sg_status_list": new_status}
         return self.update_entity(task_id=task_id, new_data=data)
+    
+    def update_assignee(self, task_id:int, user_id:int)->dict:
+        if (task_id < 0 and user_id < 0) or task_id == user_id:
+            self.logger.error("invalid data , please provide a valid task and a valid user.")
+            return 
+
+        task = self.get_task(task_id=task_id)
+        current_assignees = task.get("task_assignees", [])
+        if current_assignees:
+            for human_user in current_assignees:
+                if human_user.get("id", -1) == user_id:
+                    logger.info(f"User already assigned, nothing to do.")
+                    return task
+        current_assignees.append({'type': 'HumanUser', 'id': user_id})
+            
+        data= {"task_assignees": current_assignees}
+        return self.update_entity(entity_id=task_id, data=data)
 
 
 if __name__ == "__main__":
@@ -50,6 +73,58 @@ if __name__ == "__main__":
     flow = ShotgridInstance()
     flow.connect()
     task_manager = TaskManager(shotgun_instance=flow)
-    data = task_manager.get_tasks_from_project(project_id=124)
-    logger.info(f"data: {data}")
+    # task_manager.update_entity(
+    #     entity_id=5947,
+    #     data={'entity': {'id': 1480, 'name': 'generic_prop_1', 'type': 'Asset'} }
+    # )
+    data = task_manager.get_task(task_id=5947)
+
+    logger.info(f"data= {data}")
     flow.disconnect()
+
+    # task={
+    #     'type': 'Task', 'id': 5947, 'content': '002_Modeling', 
+    #     'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 
+    #     'due_date': None, 'sg_priority_1': None, 
+    #     'entity': {'id': 1480, 'name': 'generic_prop_1', 'type': 'Asset'}, 
+    #     'sg_status_list': 'wtg', 'task_assignees': []
+    # }
+    # task = {
+    #     'type': 'Task', 'id': 6078, 'content': '02_Animacion', 
+    #     'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 
+    #     'due_date': None, 'sg_priority_1': None, 
+    #     'entity': {'id': 1209, 'name': 'sq010_050', 'type': 'Shot'}, 
+    #     'sg_status_list': 'wtg', 'task_assignees': []
+    # }
+
+    # data= {
+    #     'type': 'Task', 
+    #     'id': 5947, 
+    #     'content': '002_Modeling', 
+    #     'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 
+    #     'due_date': None, 'sg_priority_1': None, 
+    #     'entity': {'id': 1480, 'name': 'generic_prop_1', 'type': 'Asset'}, 
+    #     'sg_status_list': 'wtg', 'task_assignees': [], 'sg_versions': []}
+
+    # data= {
+    #     'type': 'Task', 'id': 5947, 'content': '002_Modeling', 
+    #     'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 
+    #     'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1480, 'name': 'generic_prop_1', 'type': 'Asset'}, 
+    #     'sg_status_list': 'wtg', 'task_assignees': [], 
+    #     'sg_versions': [
+    #         {'id': 7028, 'name': '002_Modeling', 'type': 'Version'}, 
+    #         {'id': 7029, 'name': '002_Modeling', 'type': 'Version'}, 
+    #         {'id': 7030, 'name': '002_Modeling', 'type': 'Version'}]
+    #     }
+    # data = {
+    #         'type': 'Task', 'id': 5947, 'content': '002_Modeling', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 
+    #         'sg_priority_1': None, 'entity': {'id': 1480, 'name': 'generic_prop_1', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [], 
+    #         'sg_versions': [
+    #             {'id': 7028, 'name': '002_Modeling', 'type': 'Version'}, 
+    #             {'id': 7029, 'name': '002_Modeling', 'type': 'Version'}, 
+    #             {'id': 7030, 'name': '002_Modeling', 'type': 'Version'}, 
+    #             {'id': 7031, 'name': 'generic_prop_1_002_Modeling_v004', 'type': 'Version'}, 
+    #             {'id': 7032, 'name': 'generic_prop_1__002_Modeling__v005', 'type': 'Version'}, 
+    #             {'id': 7033, 'name': 'generic_prop_1__002_Modeling__v006', 'type': 'Version'}
+    #         ]
+    #         }
