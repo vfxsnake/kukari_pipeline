@@ -76,7 +76,7 @@ class PublishingService:
             task_id: Task ID to publish for
             file_path: Path to file to publish
             description: Optional description for the publish
-            set_task_to_review: Whether to set task status to 'rev' (default: True)
+            set_task_to_review: Whether to set task status to 'fin' (default: True)
 
         Returns:
             Dictionary with publish results:
@@ -168,7 +168,7 @@ class PublishingService:
             if set_task_to_review:
                 self.logger.info("Step 6/6: Setting task to revision status...")
                 updated_task = self.set_task_to_review(task_id)
-                self.logger.info(f"  ✓ Task status updated to 'rev'")
+                self.logger.info(f"  ✓ Task status updated to 'fin'")
             else:
                 self.logger.info("Step 6/6: Skipping task status update (set_task_to_review=False)")
 
@@ -211,7 +211,7 @@ class PublishingService:
             task_id: Task ID to publish for
             file_paths: List of file paths to publish
             description: Optional description for the version
-            set_task_to_review: Whether to set task status to 'rev' (default: True)
+            set_task_to_review: Whether to set task status to 'fin' (default: True)
             progress_callback: Optional callback function(current_step, total_steps, message)
                               Called at each step to report progress
 
@@ -333,7 +333,7 @@ class PublishingService:
             if set_task_to_review:
                 tracker.step("Setting task to review status...")
                 updated_task = self.set_task_to_review(task_id)
-                self.logger.info("Task status updated to 'rev'")
+                self.logger.info("Task status updated to 'fin'")
 
             # Return comprehensive result
             result = {
@@ -524,7 +524,7 @@ class PublishingService:
 
     def set_task_to_review(self, task_id: int) -> Dict:
         """
-        Set task status to 'rev' (Pending Review).
+        Set task status to 'fin' (Pending Review).
 
         Args:
             task_id: Task ID to update
@@ -535,7 +535,7 @@ class PublishingService:
         try:
             updated_task = self.task_manager.update_entity(
                 entity_id=task_id,
-                data={'sg_status_list': 'rev'}
+                data={'sg_status_list': 'fin'}
             )
 
             return updated_task

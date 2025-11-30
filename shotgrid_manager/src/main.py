@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
 import logging
 
-from main_window import MainWindow
+from ui.main_window import MainWindow
 from utils.logger import setup_logging
 
 
@@ -125,3 +125,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+    

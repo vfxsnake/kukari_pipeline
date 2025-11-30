@@ -200,6 +200,17 @@ class PublishDialog(QDialog):
         # Show menu at button position
         menu.exec(self.add_button.mapToGlobal(self.add_button.rect().bottomLeft()))
 
+    def _get_default_directory(self) -> str:
+        """
+        Get default directory for file dialogs.
+
+        Returns WORK_AREA env variable if set, otherwise user's home directory.
+        """
+        work_area = os.getenv('WORK_AREA')
+        if work_area and os.path.exists(work_area):
+            return work_area
+        return os.path.expanduser("~")
+
     def _add_file(self, file_type: str):
         """
         Add a file to the publish tree.
@@ -207,10 +218,12 @@ class PublishDialog(QDialog):
         Args:
             file_type: "editable" or "single delivery"
         """
+        default_dir = self._get_default_directory()
+
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             f"Select {file_type.title()} File",
-            "",
+            default_dir,
             "All Files (*.*)"
         )
 
@@ -234,9 +247,12 @@ class PublishDialog(QDialog):
 
     def _add_folder(self):
         """Add a folder (multiple delivery) to the publish tree"""
+        default_dir = self._get_default_directory()
+
         folder_path = QFileDialog.getExistingDirectory(
             self,
-            "Select Multiple Delivery Folder"
+            "Select Multiple Delivery Folder",
+            default_dir
         )
 
         if folder_path:
@@ -342,7 +358,11 @@ class PublishDialog(QDialog):
                     QApplication.processEvents()
 
                     zip_path = self.zip_utility.zip_folder(folder_path)
+
+                    # Properly close and cleanup the message box
                     zip_msg.close()
+                    QApplication.processEvents()
+                    zip_msg.deleteLater()
 
                     files_to_publish.append({
                         'file_path': zip_path,
@@ -398,7 +418,8 @@ class PublishDialog(QDialog):
                         pass
 
             # Show success message
-            version_code = result['version']['code']
+            self.logger.info(f"result = {result} <<<<<<<<<<<<<<<<<<<<<<<<")
+            version_code = result.get('version', {}).get('code', "")
             pub_file_count = len(result['published_files'])
 
             QMessageBox.information(
