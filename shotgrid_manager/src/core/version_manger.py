@@ -111,13 +111,13 @@ if __name__ == "__main__":
     #         'published_files': [{'id': 77, 'name': 'CianLu_V02.v004', 'type': 'PublishedFile'}], 
     #         'code': 'generic_prop_1_002_Modeling_v004', 'sg_status_list': 'rev'
     #     }
-    data= {
-            'type': 'Version', 'id': 7033, 'tasks': [], 'sg_task': {'id': 5947, 'name': '002_Modeling', 'type': 'Task'}, 
-            'published_files': [
-                    {'id': 83, 'name': 'CianLu_Body_Color.1001.v006', 'type': 'PublishedFile'}, 
-                    {'id': 84, 'name': 'CianLu_Body_Color.1002.v006', 'type': 'PublishedFile'}, 
-                    {'id': 85, 'name': 'CianLu_Body_Color.1003.v006', 'type': 'PublishedFile'}, 
-                    {'id': 82, 'name': 'CianLu_Body_Color.1005.v006', 'type': 'PublishedFile'}
-                ], 
-            'code': 'generic_prop_1__002_Modeling__v006', 'sg_status_list': 'rev'
-        }
+    # data= {
+    #         'type': 'Version', 'id': 7033, 'tasks': [], 'sg_task': {'id': 5947, 'name': '002_Modeling', 'type': 'Task'}, 
+    #         'published_files': [
+    #                 {'id': 83, 'name': 'CianLu_Body_Color.1001.v006', 'type': 'PublishedFile'}, 
+    #                 {'id': 84, 'name': 'CianLu_Body_Color.1002.v006', 'type': 'PublishedFile'}, 
+    #                 {'id': 85, 'name': 'CianLu_Body_Color.1003.v006', 'type': 'PublishedFile'}, 
+    #                 {'id': 82, 'name': 'CianLu_Body_Color.1005.v006', 'type': 'PublishedFile'}
+    #             ], 
+    #         'code': 'generic_prop_1__002_Modeling__v006', 'sg_status_list': 'rev'
+    #     }

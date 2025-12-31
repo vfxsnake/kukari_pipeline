@@ -6,7 +6,10 @@ import logging
 
 class TaskManager(BaseManager):
     entity = "Task"
-    entity_fields = ["id", "code", "content", "project", "due_date", "sg_priority_1", "entity", "sg_status_list", "task_assignees", "sg_versions"]
+    entity_fields = [
+        "id", "code", "content", "project", "due_date", "sg_priority_1", "entity", 
+        "sg_status_list", "task_assignees", "sg_versions", "step", "name"
+    ]
 
     def get_task(self, task_id:int)->dict:
         return self.get_entity(
@@ -73,14 +76,19 @@ if __name__ == "__main__":
     flow = ShotgridInstance()
     flow.connect()
     task_manager = TaskManager(shotgun_instance=flow)
+    
+    tasks = task_manager.get_tasks_from_asset(asset_id=1511)
+    # for task in tasks:
+    #     updated_task = task_manager.update_assignee(task_id=task.get('id', -1), user_id=121)
+    # # logger.info(f"data= {data}")
+    logger.info(f"tasks = {tasks}")
+    flow.disconnect()
+
+
     # task_manager.update_entity(
     #     entity_id=5947,
     #     data={'entity': {'id': 1480, 'name': 'generic_prop_1', 'type': 'Asset'} }
     # )
-    data = task_manager.get_task(task_id=5947)
-
-    logger.info(f"data= {data}")
-    flow.disconnect()
 
     # task={
     #     'type': 'Task', 'id': 5947, 'content': '002_Modeling', 
@@ -128,3 +136,15 @@ if __name__ == "__main__":
     #             {'id': 7033, 'name': 'generic_prop_1__002_Modeling__v006', 'type': 'Version'}
     #         ]
     #         }
+    # tasks = [
+    #     {'type': 'Task', 'id': 5968, 'content': '001_Art', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 13, 'name': 'Art', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5969, 'content': '002_Modeling', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 14, 'name': 'Model', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5970, 'content': '003_Rigg', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 15, 'name': 'Rig', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5971, 'content': '004_Textures', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 16, 'name': 'Texture', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5972, 'content': '005_Surfacing', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 142, 'name': 'Surfacing', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5973, 'content': '007_Fx', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 137, 'name': 'Character FX', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5974, 'content': '010_Output', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 182, 'name': 'Delivery', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5975, 'content': '008_Render', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 180, 'name': 'Render', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5976, 'content': '006_Lighting', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 176, 'name': 'LightRig', 'type': 'Step'}}, 
+    #     {'type': 'Task', 'id': 5977, 'content': '009_Comp', 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'due_date': None, 'sg_priority_1': None, 'entity': {'id': 1511, 'name': '01_Cianlu', 'type': 'Asset'}, 'sg_status_list': 'wtg', 'task_assignees': [{'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}, {'id': 121, 'name': 'dev pipeline', 'type': 'HumanUser'}], 'sg_versions': [], 'step': {'id': 181, 'name': 'Comp', 'type': 'Step'}}
+    # ]

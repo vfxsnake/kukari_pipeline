@@ -6,7 +6,9 @@ import logging
 
 class AssetManager(BaseManager):
     entity = "Asset"
-    entity_fields = ["task_template", "sg_versions", "sg_published_files", "tasks", "sg_status_list", "shots", "assets"]
+    entity_fields = [
+        "sg_versions", "sg_published_files", "tasks", "sg_status_list", "shots", "assets"
+    ]
 
     def create_asset(self, project_id:int, name:str, task_template:dict=None, asset_type:str=None)->dict:
         """
@@ -105,6 +107,13 @@ if __name__ == "__main__":
 
     # Create asset manager with shared connection
     asset_manager = AssetManager(shotgun_instance=sg_instance)
+
+    asset = asset_manager.get_entity(
+        filters=[["id", "is", 1511]],
+        fields=asset_manager.entity_fields
+    )
+
+    logger.info(f"asset = {asset}")
     
     # cianlu_01 = asset_manager.create_character(project_id=124, name="01_Cianlu", template_id=46)
     # mascota_bebe_01 = asset_manager.create_character(project_id=124, name="01_MascotaBebe", template_id=46)
@@ -115,13 +124,13 @@ if __name__ == "__main__":
     # risco_vuelo_04 = asset_manager.create_environment(project_id=124, name="04_riscoVuelo", template_id=46)
 
     # Example: Create multiple assets using the same connection
-    moto_01 = asset_manager.create_prop(project_id=124, name="01_Int_Depa_Cianlu", template_id=46)
-    tablet_02 = asset_manager.create_prop(project_id=124, name="03_AldeaPrincipal", template_id=46)
-    mochila_voladora_03 = asset_manager.create_prop(project_id=124, name="04_riscoVuelo", template_id=46)
+    # moto_01 = asset_manager.create_prop(project_id=124, name="01_Int_Depa_Cianlu", template_id=46)
+    # tablet_02 = asset_manager.create_prop(project_id=124, name="03_AldeaPrincipal", template_id=46)
+    # mochila_voladora_03 = asset_manager.create_prop(project_id=124, name="04_riscoVuelo", template_id=46)
 
-    print(moto_01)
-    print(tablet_02)
-    print(mochila_voladora_03)
+    # print(moto_01)
+    # print(tablet_02)
+    # print(mochila_voladora_03)
 
     # asset_manager.create_environment(project_id=124, name="generic_environment_1", template_id=46)
     # asset_manager.create_prop(project_id=124, name="generic_prop_1", template_id=46)
@@ -148,3 +157,18 @@ if __name__ == "__main__":
 # {'id': 1517, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '01_Int_Depa_Cianlu', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Prop', 'type': 'Asset'}
 # {'id': 1518, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '03_AldeaPrincipal', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Prop', 'type': 'Asset'}
 # {'id': 1519, 'project': {'id': 124, 'name': 'SandBox', 'type': 'Project'}, 'code': '04_riscoVuelo', 'task_template': {'id': 46, 'name': 'Kukari_Animation_Assets', 'type': 'TaskTemplate'}, 'sg_asset_type': 'Prop', 'type': 'Asset'}
+
+    # asset = {'type': 'Asset', 'id': 1511, 'sg_versions': [], 'sg_published_files': [], 
+    #          'tasks': [
+    #              {'id': 5968, 'name': '001_Art', 'type': 'Task'}, 
+    #              {'id': 5969, 'name': '002_Modeling', 'type': 'Task'}, 
+    #              {'id': 5970, 'name': '003_Rigg', 'type': 'Task'}, 
+    #              {'id': 5971, 'name': '004_Textures', 'type': 'Task'}, 
+    #              {'id': 5972, 'name': '005_Surfacing', 'type': 'Task'}, 
+    #              {'id': 5976, 'name': '006_Lighting', 'type': 'Task'}, 
+    #              {'id': 5973, 'name': '007_Fx', 'type': 'Task'}, 
+    #              {'id': 5975, 'name': '008_Render', 'type': 'Task'}, 
+    #              {'id': 5977, 'name': '009_Comp', 'type': 'Task'}, 
+    #              {'id': 5974, 'name': '010_Output', 'type': 'Task'}
+    #         ], 
+    #         'sg_status_list': 'wtg', 'shots': [], 'assets': []}

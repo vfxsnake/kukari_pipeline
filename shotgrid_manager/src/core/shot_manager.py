@@ -6,7 +6,7 @@ import logging
 
 class ShotManager(BaseManager):
     entity = "Shot"
-    entity_fields = []
+    entity_fields = ["id", "code", "tasks", "assets", "sg_versions", "sg_published_files"]
 
     def create_shot(self, project_id:int, name:str, task_template:dict=None)->dict:
         """
@@ -53,6 +53,19 @@ if __name__ == "__main__":
 
     flow = ShotgridInstance()
     shot_manager = ShotManager(shotgun_instance=flow)
+    flow.connect()
+
+    shots = shot_manager.get_entities(
+        filters=[
+            ["project", "is", {"type":"Project", "id": 124}], 
+            ["code", "is", "sq010_010"]
+        ],
+        fields=shot_manager.entity_fields
+    )
+
+    flow.disconnect()
+
+    print(f"shots = {shots}")
 
     # shot_list = [
     #     "sq010_010",

@@ -145,7 +145,7 @@ if __name__ == "__main__":
     path_builder = PathBuilder(sg_instance)
 
     # Get path for task - no connection management needed
-    task_path = path_builder.get_path_from_task(task_id=5961)
+    task_path = path_builder.get_path_from_task(task_id=6799)
     print(f"Task path: {task_path}")
 
     # Create directory if path exists

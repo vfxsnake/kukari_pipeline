@@ -119,7 +119,7 @@ class ShotgridTaskDataModel:
         project_id: Optional[int] = None,
         entity_type: Optional[str] = None,
         entity_name: Optional[str] = None,
-        task_type: Optional[str] = None,
+        task_name: Optional[str] = None,
         status: Optional[str] = None
     ) -> List[dict]:
         """
@@ -129,7 +129,7 @@ class ShotgridTaskDataModel:
             project_id: Filter by project ID
             entity_type: Filter by entity type ("Shot" or "Asset")
             entity_name: Filter by entity name/code (e.g., "char_hero", "shot_010")
-            task_type: Filter by task type/step
+            task_name: Filter by task type/step
             status: Filter by status code
 
         Returns:
@@ -160,11 +160,11 @@ class ShotgridTaskDataModel:
                                         t.get('entity', {}).get('name', '').lower())
             ]
 
-        # Task type filter
-        if task_type:
+        # Task name filter (matches content field)
+        if task_name:
             filtered = [
                 t for t in filtered
-                if t.get('step', {}).get('name') == task_type
+                if t.get('content', "") == task_name
             ]
 
         # Status filter

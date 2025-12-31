@@ -10,15 +10,29 @@ from PySide6.QtWidgets import (QWidget, QHBoxLayout, QLabel, QComboBox,
                                QPushButton, QLineEdit)
 from PySide6.QtCore import Signal
 
+ASSETS_TASK_NAMES = [
+    "001_Art", "002_Modeling", "003_Rigg", "004_Textures", 
+    "005_Surfacing", "006_Lighting", "007_Fx", "008_Render", 
+    "009_Comp", "010_Output"
+]
+
+SHOT_TASK_NAMES = [
+    "00_Animatic", "01_Layout", "02_Animacion", "03_Assembly", "04_Lighting", 
+    "05_Render", "06_Comp", "07_Fx", "08_Output",
+]
 
 class FilterToolbar(QWidget):
     """
     Toolbar for filtering tasks
     Provides project, entity type, and task type filters
     """
-    
+
     # Signal emitted when filters change
+    # Connected to: MainWindow.on_filters_changed() in main_window.py
     filters_changed = Signal(dict)  # Emits filter dictionary
+
+    # Signal emitted when refresh button is clicked
+    # Connected to: MainWindow.refresh_data() in main_window.py
     refresh_requested = Signal()
     
     def __init__(self, parent=None):
@@ -51,13 +65,12 @@ class FilterToolbar(QWidget):
         layout.addSpacing(20)
         
         # Task type filter
-        layout.addWidget(QLabel("Task Type:"))
+        layout.addWidget(QLabel("Task Name:"))
         self.task_type_combo = QComboBox()
         self.task_type_combo.addItem("All")
         # Common task types - can be populated dynamically
-        task_types = ["Animation", "Modeling", "Rigging", "Texturing", 
-                     "Lighting", "Layout", "FX", "Compositing"]
-        self.task_type_combo.addItems(task_types)
+        task_names = ASSETS_TASK_NAMES + SHOT_TASK_NAMES
+        self.task_type_combo.addItems(task_names)
         layout.addWidget(self.task_type_combo)
         
         layout.addSpacing(20)
@@ -168,13 +181,13 @@ class FilterToolbar(QWidget):
         """
         project_data = self.project_combo.currentData()
         entity_type = self.entity_type_combo.currentText()
-        task_type = self.task_type_combo.currentText()
+        task_name = self.task_type_combo.currentText()
         search_text = self.search_input.text().strip()
         
         return {
             'project_id': project_data if project_data else None,
             'entity_type': entity_type if entity_type != "All" else None,
-            'task_type': task_type if task_type != "All" else None,
+            'task_name': task_name if task_name != "All" else None,
             'search_text': search_text if search_text else None
         }
     

@@ -201,11 +201,12 @@ class MainWindow(QMainWindow):
         self.task_board.publish_requested.connect(
             self.on_publish_requested
         )
+        # Filter toolbar signals → handler methods (see docstrings for details)
         self.task_board.filter_toolbar.filters_changed.connect(
-            self.on_filters_changed
+            self.on_filters_changed  # See line 474
         )
         self.task_board.filter_toolbar.refresh_requested.connect(
-            self.refresh_data
+            self.refresh_data  # See line 488
         )
 
         # Load initial data
@@ -324,7 +325,7 @@ class MainWindow(QMainWindow):
         # Apply filters using data model (LOCAL - super fast!)
         project_id = filters.get('project_id')
         entity_type = filters.get('entity_type')
-        task_type = filters.get('task_type')
+        task_name = filters.get('task_name')
         search_text = filters.get('search_text')
 
         # Use model filtering
@@ -336,7 +337,7 @@ class MainWindow(QMainWindow):
             tasks = self.data_model.filter_tasks(
                 project_id=project_id,
                 entity_type=entity_type,
-                task_type=task_type
+                task_name=task_name
             )
 
         # Populate board with filtered tasks
@@ -472,13 +473,26 @@ class MainWindow(QMainWindow):
 
     @Slot(dict)
     def on_filters_changed(self, filters):
-        """Handle filter changes - uses cached data for instant response"""
+        """
+        Handle filter changes - uses cached data for instant response.
+
+        Connected from: FilterToolbar.filters_changed signal
+        Connection: line 204-205 in _connect_signals()
+
+        Args:
+            filters: Dictionary with filter values (project_id, entity_type, task_name, search_text)
+        """
         self.logger.debug(f"Filters changed: {filters}")
         self._apply_filters()
 
     @Slot()
     def refresh_data(self):
-        """Refresh all data from Shotgrid"""
+        """
+        Refresh all data from Shotgrid.
+
+        Connected from: FilterToolbar.refresh_requested signal
+        Connection: line 207-208 in _connect_signals()
+        """
         self.logger.info("Refreshing data from ShotGrid...")
         self.load_tasks(force_refresh=True)
 
