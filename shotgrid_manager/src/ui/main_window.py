@@ -21,9 +21,11 @@ from core.shot_manager import ShotManager
 from core.version_manger import VersionManager
 from core.published_file_manager import PublishedFileManager
 from core.publishing_service import PublishingService
+from core.dependency_resolver import DependencyResolver
 from ui.widgets.kanban_task_board_widget import TaskBoardWidget
 from ui.widgets.shotgrid_task_data_model import ShotgridTaskDataModel
 from ui.dialogs.publish_dialog import PublishDialog
+from ui.dialogs.dependencies_dialog import DependenciesDialog
 from utils.logger import setup_logging
 
 
@@ -53,6 +55,7 @@ class MainWindow(QMainWindow):
         self.version_manager = None
         self.published_file_manager = None
         self.publishing_service = None
+        self.dependency_resolver = None
 
         # UI state
         self.current_user_id = os.getenv('KUKARI_USER_ID')
@@ -167,6 +170,9 @@ class MainWindow(QMainWindow):
             # Create publishing service
             self.publishing_service = PublishingService(shotgun_instance=self.sg_instance)
 
+            # Create dependency resolver
+            self.dependency_resolver = DependencyResolver(task_manager=self.task_manager)
+
             self.logger.info("✓ Connected to Shotgrid, all managers initialized")
             self.status_bar.showMessage("Connected to Shotgrid", 3000)
 
@@ -200,6 +206,9 @@ class MainWindow(QMainWindow):
         )
         self.task_board.publish_requested.connect(
             self.on_publish_requested
+        )
+        self.task_board.dependencies_requested.connect(
+            self.on_dependencies_requested
         )
         # Filter toolbar signals → handler methods (see docstrings for details)
         self.task_board.filter_toolbar.filters_changed.connect(
@@ -458,6 +467,55 @@ class MainWindow(QMainWindow):
 
         # Reload projects (in case new ones were added)
         self.load_projects()
+
+    @Slot(dict)
+    def on_dependencies_requested(self, task_data):
+        """
+        Handle dependencies view request - opens dependencies dialog.
+
+        Args:
+            task_data: Task dictionary from cache
+        """
+        task_id = task_data.get('id', -1)
+        self.logger.info(f"Dependencies requested for task {task_id}")
+
+        try:
+            # Show status message
+            self.status_bar.showMessage(f"Loading dependencies for task {task_id}...")
+
+            # Resolve dependencies
+            dependencies = self.dependency_resolver.get_dependencies(task_id)
+
+            # Create and show dependencies dialog
+            dialog = DependenciesDialog(
+                task_data=task_data,
+                dependencies=dependencies,
+                version_manager=self.version_manager,
+                parent=self
+            )
+
+            # Show dialog
+            dialog.exec()
+
+            # Clear status message
+            self.status_bar.showMessage(f"Loaded {len(dependencies)} dependencies", 3000)
+
+        except ValueError as e:
+            # Task not found
+            self.logger.error(f"Task not found: {e}")
+            QMessageBox.warning(
+                self,
+                "Task Not Found",
+                f"Could not find task {task_id} in ShotGrid."
+            )
+
+        except Exception as e:
+            self.logger.error(f"Error loading dependencies: {e}", exc_info=True)
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to load dependencies:\n{str(e)}"
+            )
 
         # Reload tasks with force refresh (clears cache, queries ShotGrid)
         self.load_tasks(force_refresh=True)

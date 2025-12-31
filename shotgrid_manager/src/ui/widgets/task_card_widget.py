@@ -6,9 +6,9 @@ Individual draggable task card for Kanban board.
 Displays task information in a compact, styled card format.
 """
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QMenu
 from PySide6.QtCore import Qt, Signal, QMimeData
-from PySide6.QtGui import QDrag, QPixmap, QPainter
+from PySide6.QtGui import QDrag, QPixmap, QPainter, QAction
 
 
 class TaskCardWidget(QFrame):
@@ -25,8 +25,9 @@ class TaskCardWidget(QFrame):
     Supports drag-and-drop to move between status columns.
     """
 
-    # Signal emitted when card is double-clicked for details
-    card_clicked = Signal(dict)  # Emits task data
+    # Signals
+    card_clicked = Signal(dict)  # Emitted when card is double-clicked for details
+    dependencies_requested = Signal(dict)  # Emitted when user requests dependency view
 
     def __init__(self, task_data, parent=None):
         """
@@ -221,3 +222,24 @@ class TaskCardWidget(QFrame):
         if event.button() == Qt.LeftButton:
             self.card_clicked.emit(self.task_data)
         super().mouseDoubleClickEvent(event)
+
+    def contextMenuEvent(self, event):
+        """Handle right-click context menu"""
+        menu = QMenu(self)
+
+        # View Details action (same as double-click)
+        details_action = QAction("View Details", self)
+        details_action.triggered.connect(lambda: self.card_clicked.emit(self.task_data))
+        menu.addAction(details_action)
+
+        menu.addSeparator()
+
+        # View Dependencies action
+        dependencies_action = QAction("View Dependencies", self)
+        dependencies_action.triggered.connect(
+            lambda: self.dependencies_requested.emit(self.task_data)
+        )
+        menu.addAction(dependencies_action)
+
+        # Show menu at cursor position
+        menu.exec_(event.globalPos())

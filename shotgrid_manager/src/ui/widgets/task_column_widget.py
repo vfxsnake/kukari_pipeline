@@ -21,8 +21,9 @@ class TaskColumnWidget(QFrame):
     task status updates.
     """
 
-    # Signal emitted when a task is dropped into this column
+    # Signals
     task_dropped = Signal(int, str, str)  # task_id, old_status, new_status
+    dependencies_requested = Signal(dict)  # task_data
 
     def __init__(self, status_name, status_code, parent=None):
         """
@@ -126,6 +127,9 @@ class TaskColumnWidget(QFrame):
         """
         card = TaskCardWidget(task_data)
         self.task_cards.append(card)
+
+        # Connect card signals
+        card.dependencies_requested.connect(self.dependencies_requested.emit)
 
         # Insert before stretch
         self.cards_layout.insertWidget(self.cards_layout.count() - 1, card)

@@ -25,6 +25,7 @@ class TaskBoardWidget(QWidget):
     # Signals
     task_status_update_requested = Signal(int, str, str)  # task_id, old_status, new_status
     publish_requested = Signal(dict)  # task_data
+    dependencies_requested = Signal(dict)  # task_data
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -84,9 +85,12 @@ class TaskBoardWidget(QWidget):
         self.filter_toolbar.filters_changed.connect(self.on_filters_changed)
         self.filter_toolbar.refresh_requested.connect(self.refresh_board)
 
-        # Drag and drop
+        # Connect column signals
         for column in self.columns.values():
+            # Drag and drop
             column.task_dropped.connect(self.on_task_dropped)
+            # Dependencies requested
+            column.dependencies_requested.connect(self.dependencies_requested.emit)
 
     @Slot(int, str, str)
     def on_task_dropped(self, task_id, old_status, new_status):
