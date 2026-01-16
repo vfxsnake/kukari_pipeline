@@ -27,13 +27,13 @@ class UserManager(BaseManager):
         
         return self.create_entity(data = user_data)
     
-    def get_all_users(self):
+    def get_all_users(self, custom_filters:list=None, custom_fields:list=None)-> list:
         """
-        gets all users from the shot gun instance
-        """
+        gets all users dictionaries from the shot gun instance, if a list of fields is provided it will be used 
+        """ 
         return self.get_entities(
-            filters=[],
-            fields=self.entity_fields
+            filters=custom_filters or [],
+            fields=custom_fields or self.entity_fields
         )
 
 
@@ -60,10 +60,11 @@ if __name__ == "__main__":
 
     # Create asset manager with shared connection
     user_manager = UserManager(shotgun_instance=sg_instance)
-    # user = user_manager.create_user(last_name="pipeline", first_name="dev", status="dis")
-    users = user_manager.get_all_users()
+    # user = user_manager.create_user(last_name="Generic_10", first_name="Artist", status="dis")
+    users = user_manager.get_all_users(custom_fields=['id', 'name', 'lastname'])
 
-    print(f"users: {users}")
+    for user in users:
+        print(user)
 
     
     # Disconnect once at shutdown
@@ -86,3 +87,20 @@ if __name__ == "__main__":
     #     {'type': 'HumanUser', 'id': 154, 'projects': [{'id': 158, 'name': 'Norwegian', 'type': 'Project'}, {'id': 124, 'name': 'SandBox', 'type': 'Project'}], 'sg_status_list': 'dis', 'name': 'Daniel Bolanos', 'lastname': 'Bolanos', 'firstname': 'Daniel'}, 
     #     {'type': 'HumanUser', 'id': 155, 'projects': [{'id': 158, 'name': 'Norwegian', 'type': 'Project'}, {'id': 124, 'name': 'SandBox', 'type': 'Project'}, {'id': 91, 'name': 'SIAMES', 'type': 'Project'}], 'sg_status_list': 'dis', 'name': 'Beto Juarez', 'lastname': 'Juarez', 'firstname': 'Beto'}
     # ]
+
+    # users= [
+    #     {'type': 'HumanUser', 'id': 3, 'projects': [], 'sg_status_list': 'dis', 'name': 'Template User', 'lastname': 'User', 'firstname': 'Template'}, 
+    #     {'type': 'HumanUser', 'id': 17, 'projects': [], 'sg_status_list': 'dis', 'name': 'Ulises Virgen', 'lastname': 'Virgen', 'firstname': 'Ulises'}, 
+    #     {'type': 'HumanUser', 'id': 18, 'projects': [], 'sg_status_list': 'dis', 'name': 'Artist 2', 'lastname': '2', 'firstname': 'Artist'}, 
+    #     {'type': 'HumanUser', 'id': 19, 'projects': [], 'sg_status_list': 'dis', 'name': 'Artist 1', 'lastname': '1', 'firstname': 'Artist'}, 
+    #     {'type': 'HumanUser', 'id': 21, 'projects': [], 'sg_status_list': 'dis', 'name': 'Vendor 1', 'lastname': '1', 'firstname': 'Vendor'}, 
+    #     {'type': 'HumanUser', 'id': 24, 'projects': [{'id': 89, 'name': 'Animation Template', 'type': 'Project'}, {'id': 88, 'name': 'Automotive Design Template', 'type': 'Project'}, {'id': 87, 'name': 'Demo: Automotive', 'type': 'Project'}, {'id': 86, 'name': 'Game Outsourcing Template', 'type': 'Project'}], 'sg_status_list': 'act', 'name': 'ShotGrid Support', 'lastname': 'Support', 'firstname': 'ShotGrid'}, 
+    #     {'type': 'HumanUser', 'id': 58, 'projects': [], 'sg_status_list': 'dis', 'name': 'Vendor 2', 'lastname': '2', 'firstname': 'Vendor'}, 
+    #     {'type': 'HumanUser', 'id': 59, 'projects': [], 'sg_status_list': 'dis', 'name': 'Vendor 3', 'lastname': '3', 'firstname': 'Vendor'}, 
+    #     {'type': 'HumanUser', 'id': 66, 'projects': [], 'sg_status_list': 'dis', 'name': 'Manager 1', 'lastname': '1', 'firstname': 'Manager'}, 
+    #     {'type': 'HumanUser', 'id': 67, 'projects': [], 'sg_status_list': 'dis', 'name': 'Manager 2', 'lastname': '2', 'firstname': 'Manager'}, 
+    #     {'type': 'HumanUser', 'id': 68, 'projects': [], 'sg_status_list': 'dis', 'name': 'Manager 3', 'lastname': '3', 'firstname': 'Manager'}, 
+    #     {'type': 'HumanUser', 'id': 88, 'projects': [{'id': 157, 'name': 'My Animation Project', 'type': 'Project'}, {'id': 158, 'name': 'Norwegian', 'type': 'Project'}, {'id': 124, 'name': 'SandBox', 'type': 'Project'}, {'id': 91, 'name': 'SIAMES', 'type': 'Project'}], 'sg_status_list': 'act', 'name': 'kukari animation', 'lastname': 'animation', 'firstname': 'kukari'}, 
+    #     {'type': 'HumanUser', 'id': 121, 'projects': [], 'sg_status_list': 'dis', 'name': 'dev pipeline', 'lastname': 'pipeline', 'firstname': 'dev'}, 
+    #     {'type': 'HumanUser', 'id': 154, 'projects': [{'id': 158, 'name': 'Norwegian', 'type': 'Project'}, {'id': 124, 'name': 'SandBox', 'type': 'Project'}], 'sg_status_list': 'dis', 'name': 'Daniel Bolanos', 'lastname': 'Bolanos', 'firstname': 'Daniel'}, 
+    #     {'type': 'HumanUser', 'id': 155, 'projects': [{'id': 158, 'name': 'Norwegian', 'type': 'Project'}, {'id': 124, 'name': 'SandBox', 'type': 'Project'}, {'id': 91, 'name': 'SIAMES', 'type': 'Project'}], 'sg_status_list': 'dis', 'name': 'Beto Juarez', 'lastname': 'Juarez', 'firstname': 'Beto'}]
