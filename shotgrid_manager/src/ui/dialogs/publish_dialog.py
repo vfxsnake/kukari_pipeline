@@ -187,6 +187,11 @@ class PublishDialog(QDialog):
         editable_action.triggered.connect(lambda: self._add_file("editable"))
         menu.addAction(editable_action)
 
+        # Add Multiple DCC Editable action
+        multi_editable_action = QAction("Add Multiple DCC Editable", self)
+        multi_editable_action.triggered.connect(self._add_multiple_editable)
+        menu.addAction(multi_editable_action)
+
         # Add Single Delivery action
         single_action = QAction("Add Single Delivery File", self)
         single_action.triggered.connect(lambda: self._add_file("single delivery"))
@@ -244,6 +249,49 @@ class PublishDialog(QDialog):
             }
 
             self.logger.info(f"Added {file_type} file: {file_name}")
+
+    def _add_multiple_editable(self):
+        """Add multiple DCC editable files as a grouped bundle"""
+        default_dir = self._get_default_directory()
+
+        file_paths, _ = QFileDialog.getOpenFileNames(
+            self,
+            "Select Multiple DCC Editable Files",
+            default_dir,
+            "DCC Files (*.ma *.mb *.hip *.hiplc *.hipnc *.blend *.max *.c4d *.ztl *.zpr *.nk *.katana);;All Files (*.*)"
+        )
+
+        if not file_paths:
+            return
+
+        # Create parent group item
+        group_name = f"{self.entity_name}_{self.task_name}_editable_bundle"
+        group_item = QTreeWidgetItem(self.root_item, [
+            group_name,
+            "editable",
+            ""
+        ])
+
+        # Add each file as a child item for display
+        for fp in file_paths:
+            QTreeWidgetItem(group_item, [
+                os.path.basename(fp),
+                "",
+                fp
+            ])
+
+        group_item.setExpanded(True)
+
+        # Store in file_items
+        self.file_items[group_item] = {
+            'file_path': file_paths[0],
+            'type': 'editable',
+            'is_folder': False,
+            'is_multi_file': True,
+            'file_paths': file_paths
+        }
+
+        self.logger.info(f"Added multiple editable bundle: {len(file_paths)} files")
 
     def _add_folder(self):
         """Add a folder (multiple delivery) to the publish tree"""
@@ -344,7 +392,27 @@ class PublishDialog(QDialog):
             files_to_publish = []
 
             for item, info in self.file_items.items():
-                if info['is_folder']:
+                if info.get('is_multi_file'):
+                    # Zip multiple files into one archive
+                    zip_msg = QMessageBox(self)
+                    zip_msg.setWindowTitle("Zipping Files")
+                    zip_msg.setText(f"Compressing {len(info['file_paths'])} files...")
+                    zip_msg.setStandardButtons(QMessageBox.NoButton)
+                    zip_msg.show()
+                    QApplication.processEvents()
+
+                    zip_path = self.zip_utility.zip_files(info['file_paths'])
+
+                    zip_msg.close()
+                    QApplication.processEvents()
+                    zip_msg.deleteLater()
+
+                    files_to_publish.append({
+                        'file_path': zip_path,
+                        'type': info['type'],
+                        'is_temp': True
+                    })
+                elif info['is_folder']:
                     # Zip folder first
                     folder_path = info['file_path']
                     folder_name = os.path.basename(folder_path)

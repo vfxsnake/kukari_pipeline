@@ -194,6 +194,63 @@ class ZipUtility:
                     pass
             raise IOError(f"Failed to create zip: {str(e)}") from e
 
+    def zip_files(
+        self,
+        file_paths: List[str],
+        output_path: Optional[str] = None,
+        compression: int = zipfile.ZIP_DEFLATED
+    ) -> str:
+        """
+        Create a zip archive from multiple files (flat, basenames only).
+
+        Args:
+            file_paths: List of file paths to compress
+            output_path: Optional output path for zip file
+            compression: Compression method
+
+        Returns:
+            Path to created zip file
+        """
+        if not file_paths:
+            raise ValueError("No file paths provided")
+
+        for fp in file_paths:
+            fp_abs = os.path.abspath(fp)
+            if not os.path.isfile(fp_abs):
+                raise FileNotFoundError(f"File not found: {fp_abs}")
+
+        if output_path is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            zip_filename = f"multi_files_{timestamp}.zip"
+            output_path = os.path.join(tempfile.gettempdir(), zip_filename)
+        else:
+            output_path = os.path.abspath(output_path)
+            if not output_path.endswith('.zip'):
+                output_path += '.zip'
+
+        self.logger.info(f"Creating zip archive from {len(file_paths)} files")
+
+        try:
+            with zipfile.ZipFile(output_path, 'w', compression) as zipf:
+                for fp in file_paths:
+                    fp_abs = os.path.abspath(fp)
+                    arcname = os.path.basename(fp_abs)
+                    zipf.write(fp_abs, arcname)
+
+            zip_size_mb = os.path.getsize(output_path) / (1024 * 1024)
+            self.logger.info(f"Zip created: {output_path} ({zip_size_mb:.2f} MB, {len(file_paths)} files)")
+
+            return output_path
+
+        except Exception as e:
+            self.logger.error(f"Failed to create zip: {e}")
+            if os.path.exists(output_path):
+                try:
+                    os.remove(output_path)
+                except:
+                    pass
+            raise IOError(f"Failed to create zip: {str(e)}") from e
+
     def _should_exclude(self, file_path: str, exclude_patterns: List[str]) -> bool:
         """
         Check if file should be excluded based on patterns.
@@ -284,6 +341,22 @@ def zip_file(file_path: str, output_path: Optional[str] = None, **kwargs) -> str
     """
     zipper = ZipUtility()
     return zipper.zip_file(file_path, output_path, **kwargs)
+
+
+def zip_files(file_paths: List[str], output_path: Optional[str] = None, **kwargs) -> str:
+    """
+    Quick function to zip multiple files.
+
+    Args:
+        file_paths: List of file paths to compress
+        output_path: Optional output path
+        **kwargs: Additional arguments for ZipUtility.zip_files()
+
+    Returns:
+        Path to created zip file
+    """
+    zipper = ZipUtility()
+    return zipper.zip_files(file_paths, output_path, **kwargs)
 
 
 if __name__ == "__main__":
